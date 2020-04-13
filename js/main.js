@@ -1,10 +1,13 @@
-const usersData = [];
+const MIN_NUMBER_LIKES = 15;
+const MAX_NUMBER_LIKES = 200;
+const MIN_NUMBER_COMMENT = 0;
+const MIN_NUMBER_NAME = 0;
+
+const picturesData = [];
 
 const pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
 //const picturesContainer = document.querySelector('.pictures');
 const picturesFragment = document.createDocumentFragment();
-const MIN_NUMBER_LIKES = 15;
-const MAX_NUMBER_LIKES = 200;
 
 const commentsData = [
     "Всё отлично!",
@@ -53,48 +56,35 @@ const photosUrls = [
     "photos/25.jpg"
 ];
 
-const getRandomComment = (commentsData) => {
-    const RANDOM_COMMENT = Math.floor(Math.random() * commentsData.length);
-    return commentsData[RANDOM_COMMENT];
+const getRandomInteger = (minValue, maxValue) => {
+    return Math.floor(Math.random() * (maxValue - minValue)) + minValue;
 }
 
-const getRandomLikes = (MAX_NUMBER_LIKES, MIN_NUMBER_LIKES) => {
-    console.log(MAX_NUMBER_LIKES);
-    console.log(MIN_NUMBER_LIKES);
-    console.log(Math.floor(Math.random() * (MAX_NUMBER_LIKES - MIN_NUMBER_LIKES)) + MIN_NUMBER_LIKES);
-    return Math.floor(Math.random() * (MAX_NUMBER_LIKES - MIN_NUMBER_LIKES)) + MIN_NUMBER_LIKES;
-}
-
-const getRandomName = (usersName) => {
-    const RANDOM_NAME = Math.floor(Math.random() * usersName.length);
-    return usersName[RANDOM_NAME];
-}
-
-const generatePhotosData = () => {
+const generatePicturesData = () => {
     for (let index = 0; index < photosUrls.length; index++) {
-        usersData.push({
-            comments: getRandomComment(commentsData),
-            likes: getRandomLikes(),
-            name: getRandomName(usersName),
-            picture: photosUrls[index]
+        picturesData.push({
+            comments: commentsData[getRandomInteger(MIN_NUMBER_COMMENT, commentsData.length - 1)],
+            likes: getRandomInteger(MIN_NUMBER_LIKES, MAX_NUMBER_LIKES),
+            name: usersName[getRandomInteger(MIN_NUMBER_NAME, usersName.length - 1)],
+            avatar: photosUrls[index]
         })
     }
 }
 
-const createPicture = (picture, index) => {
+picturesData.forEach((picture) => {
+    picturesFragment.appendChild(createPicture(picture, index));
+});
+
+const createPicture = (picture) => {
     const image = pictureTemplate.cloneNode(true);
 
     image.querySelector('.picture__comments').textContent = picture.comments;
     image.querySelector('.picture__likes').textContent = picture.likes;
-    image.querySelector('.picture__img').src = picture.url;
+    image.querySelector('.picture__img').src = picture.avatar;
 
     return image;
 }
 
-usersData.forEach((picture, index) => {
-    picturesFragment.appendChild(createPicture(picture, index));
-});
-
-console.log(usersData);
-generatePhotosData();
+console.log(picturesData);
+generatePicturesData();
 createPicture();
