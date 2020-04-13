@@ -1,12 +1,18 @@
 const usersData = [];
 
+const pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
+//const picturesContainer = document.querySelector('.pictures');
+const picturesFragment = document.createDocumentFragment();
+const MIN_NUMBER_LIKES = 15;
+const MAX_NUMBER_LIKES = 200;
+
 const commentsData = [
     "Всё отлично!",
     "В целом всё неплохо. Но не всё.",
     "Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально",
     "Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше.",
     "Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.",
-    "Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!",
+    "Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!"
 ];
 
 const usersName = [
@@ -48,29 +54,47 @@ const photosUrls = [
 ];
 
 const getRandomComment = (commentsData) => {
-    let rand = Math.floor(Math.random() * commentsData.length);
-    return commentsData[rand];
+    const RANDOM_COMMENT = Math.floor(Math.random() * commentsData.length);
+    return commentsData[RANDOM_COMMENT];
 }
 
-const getRandomLikes = () => {
-    return Math.floor(Math.random() * (25 - 1)) + 1;
+const getRandomLikes = (MAX_NUMBER_LIKES, MIN_NUMBER_LIKES) => {
+    console.log(MAX_NUMBER_LIKES);
+    console.log(MIN_NUMBER_LIKES);
+    console.log(Math.floor(Math.random() * (MAX_NUMBER_LIKES - MIN_NUMBER_LIKES)) + MIN_NUMBER_LIKES);
+    return Math.floor(Math.random() * (MAX_NUMBER_LIKES - MIN_NUMBER_LIKES)) + MIN_NUMBER_LIKES;
 }
 
 const getRandomName = (usersName) => {
-    let rand = Math.floor(Math.random() * usersName.length);
-    return usersName[rand];
+    const RANDOM_NAME = Math.floor(Math.random() * usersName.length);
+    return usersName[RANDOM_NAME];
 }
 
-const getObjectOfArray = () => {
-    for (let index = 0; index < 25; index++) {
+const generatePhotosData = () => {
+    for (let index = 0; index < photosUrls.length; index++) {
         usersData.push({
             comments: getRandomComment(commentsData),
             likes: getRandomLikes(),
             name: getRandomName(usersName),
-            avatar: photosUrls[index]
+            picture: photosUrls[index]
         })
     }
 }
 
+const createPicture = (picture, index) => {
+    const image = pictureTemplate.cloneNode(true);
+
+    image.querySelector('.picture__comments').textContent = picture.comments;
+    image.querySelector('.picture__likes').textContent = picture.likes;
+    image.querySelector('.picture__img').src = picture.url;
+
+    return image;
+}
+
+usersData.forEach((picture, index) => {
+    picturesFragment.appendChild(createPicture(picture, index));
+});
+
 console.log(usersData);
-getObjectOfArray();
+generatePhotosData();
+createPicture();
