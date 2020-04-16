@@ -3,11 +3,7 @@ const MAX_NUMBER_LIKES = 200;
 const MIN_NUMBER_COMMENT = 0;
 const MIN_NUMBER_NAME = 0;
 
-const picturesData = [];
-
 const pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
-//const picturesContainer = document.querySelector('.pictures');
-const picturesFragment = document.createDocumentFragment();
 
 const commentsData = [
     "Всё отлично!",
@@ -56,6 +52,8 @@ const photosUrls = [
     "photos/25.jpg"
 ];
 
+const picturesData = [];
+
 const getRandomInteger = (minValue, maxValue) => {
     return Math.floor(Math.random() * (maxValue - minValue)) + minValue;
 }
@@ -71,20 +69,26 @@ const generatePicturesData = () => {
     }
 }
 
-picturesData.forEach((picture) => {
-    picturesFragment.appendChild(createPicture(picture, index));
-});
-
 const createPicture = (picture) => {
     const image = pictureTemplate.cloneNode(true);
 
-    image.querySelector('.picture__comments').textContent = picture.comments;
+    image.querySelector('.picture__comments').textContent = picture.comments.length;
     image.querySelector('.picture__likes').textContent = picture.likes;
     image.querySelector('.picture__img').src = picture.avatar;
 
     return image;
 }
 
-console.log(picturesData);
+const renderAllPictures = () => {
+    const picturesContainer = document.querySelector('.pictures');
+    const picturesFragment = document.createDocumentFragment();
+
+    picturesData.forEach((picture) => {
+        picturesFragment.append(createPicture(picture));
+    });
+
+    picturesContainer.append(picturesFragment);
+}
+
 generatePicturesData();
-createPicture();
+renderAllPictures();
