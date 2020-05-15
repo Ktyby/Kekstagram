@@ -1,14 +1,14 @@
 const MIN_NUMBER_LIKES = 15;
 const MAX_NUMBER_LIKES = 200;
 const MIN_NUMBER_COMMENT = 0;
+const MIN_NUMBER_MESSAGE = 0;
 const MIN_NUMBER_NAME = 0;
 const MIN_NUMBER_DESCRIPTION = 0;
 
 const pictureTemplate = document.querySelector("#picture").content.querySelector(".picture");
-const picturePreview = document.querySelector(".big-picture__preview");
 const bigPicture = document.querySelector(".big-picture");
 
-const COMMENTS_DATA = [
+const MESSAGE_DATA = [
     "Всё отлично!",
     "В целом всё неплохо. Но не всё.",
     "Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально",
@@ -68,10 +68,31 @@ DESCRIPTION_DATA = [
     "Да, я сумасшедшая. Быть нормальной — слишком скучно."
 ];
 
+const USERS_AVATARS = [
+    "avatar-1.svg",
+    "avatar-2.svg",
+    "avatar-3.svg",
+    "avatar-4.svg",
+    "avatar-5.svg",
+    "avatar-6.svg",
+]
+
+const COMMENTS_DATA = [];
+
 const PICTURES_DATA = [];
 
 const getRandomInteger = (minValue, maxValue) => {
     return Math.floor(Math.random() * (maxValue - minValue)) + minValue;
+}
+
+const generateCommentsData = () => {
+    for (let index = 0; index < USERS_AVATARS.length; index++) {
+        COMMENTS_DATA.push({
+            avatar: USERS_AVATARS[index],
+            message: MESSAGE_DATA[getRandomInteger(MIN_NUMBER_MESSAGE, MESSAGE_DATA.length - 1)],
+            name: USERS_NAME[getRandomInteger(MIN_NUMBER_NAME, USERS_NAME.length - 1)]
+        })
+    }
 }
 
 const generatePicturesData = () => {
@@ -79,19 +100,19 @@ const generatePicturesData = () => {
         PICTURES_DATA.push({
             comments: COMMENTS_DATA[getRandomInteger(MIN_NUMBER_COMMENT, COMMENTS_DATA.length - 1)],
             likes: getRandomInteger(MIN_NUMBER_LIKES, MAX_NUMBER_LIKES),
-            name: USERS_NAME[getRandomInteger(MIN_NUMBER_NAME, USERS_NAME.length - 1)],
-            avatar: PHOTOS_URLS[index],
+            image: PHOTOS_URLS[index],
             description: DESCRIPTION_DATA[getRandomInteger(MIN_NUMBER_DESCRIPTION, DESCRIPTION_DATA.length - 1)]
         })
     }
 }
 
-const createPicture = (picture) => {
+const createPicture = (picture, index) => {
     const image = pictureTemplate.cloneNode(true);
 
     image.querySelector(".picture__comments").textContent = picture.comments.length;
     image.querySelector(".picture__likes").textContent = picture.likes;
-    image.querySelector(".picture__img").src = picture.avatar;
+    image.querySelector(".picture__img").src = picture.image;
+    image.setAttribute("data-number", index);
 
     return image;
 }
@@ -100,33 +121,37 @@ const renderAllPictures = () => {
     const picturesContainer = document.querySelector(".pictures");
     const picturesFragment = document.createDocumentFragment();
 
-    PICTURES_DATA.forEach((picture) => {
-        picturesFragment.append(createPicture(picture));
+    PICTURES_DATA.forEach((picture, index) => {
+        picturesFragment.append(createPicture(picture, index));
     });
 
     picturesContainer.append(picturesFragment);
 }
 
-const createFullScreenPicture = (picture) => {
-    const image = picturePreview.cloneNode(true);
+const renderBigPicture = (evt) => {
+    bigPicture.classList.remove("hidden");
 
-    image.querySelector(".big-picture__img").src = picture.avatar;
-    image.querySelector(".likes-count").textContent = picture.likes;
-    image.querySelector(".comments-count").textContent = picture.comments.length;
-    image.querySelector(".social__comments").textContent = picture.comments;
-
-    return image;
+    bigPicture.querySelector(".big-picture__img").textContent = evt.avatar;
+    bigPicture.querySelector(".likes-count").textContent = evt.likes;
+    bigPicture.querySelector(".comments-count").textContent = evt.comments.length;
+    bigPicture.querySelector(".social__comments").textContent = evt.comments;
+    bigPicture.querySelector(".social__caption").textContent = evt.description;
 }
 
-const renderFullScreenPicture = () => {
-    const miniaturs = document.querySelector(".picture__img");
-    miniaturs.addEventListener("click", renderFullScreenPicture);
+const handlePictureClick = (evt) => {
+    renderBigPicture(evt);
 
-    PICTURES_DATA.forEach((picture) => {
-        miniaturs.append(createFullScreenPicture(picture));
-    });
-    picturePreview.append(picturesFragment);
+    const idPicture = evt.currentTarget.getAttribute("data-number");
 }
 
+const miniaturs = [...document.querySelectorAll(".picture__img")];
+
+const setPicturesClickListeners = () => {
+    miniaturs.forEach((evt) => evt.addEventListener("click", handlePictureClick(evt)));
+}
+
+console.log(PICTURES_DATA);
+
+generateCommentsData();
 generatePicturesData();
 renderAllPictures();
