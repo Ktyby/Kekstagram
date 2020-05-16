@@ -1,5 +1,6 @@
 const MIN_NUMBER_LIKES = 15;
 const MAX_NUMBER_LIKES = 200;
+const MAX_NUMBER_COMMENTS = 100;
 const MIN_NUMBER_COMMENT = 0;
 const MIN_NUMBER_MESSAGE = 0;
 const MIN_NUMBER_NAME = 0;
@@ -85,8 +86,10 @@ const getRandomInteger = (minValue, maxValue) => {
     return Math.floor(Math.random() * (maxValue - minValue)) + minValue;
 }
 
+
+
 const generateCommentsData = () => {
-    for (let index = 0; index < USERS_AVATARS.length; index++) {
+    for (let index = 0; index < getRandomInteger(MIN_NUMBER_COMMENT, MAX_NUMBER_COMMENTS); index++) {
         COMMENTS_DATA.push({
             avatar: USERS_AVATARS[index],
             message: MESSAGE_DATA[getRandomInteger(MIN_NUMBER_MESSAGE, MESSAGE_DATA.length - 1)],
