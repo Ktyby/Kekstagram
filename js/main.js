@@ -1,7 +1,8 @@
 const MIN_NUMBER_LIKES = 15;
 const MAX_NUMBER_LIKES = 200;
-const MAX_NUMBER_COMMENTS = 100;
-const MIN_NUMBER_COMMENT = 0;
+const MIN_NUMBER_COMMENT = 5;
+const MAX_NUMBER_COMMENTS = 20;
+const MIN_NUMBER_AVATAR = 0;
 const MIN_NUMBER_MESSAGE = 0;
 const MIN_NUMBER_NAME = 0;
 const MIN_NUMBER_DESCRIPTION = 0;
@@ -56,7 +57,7 @@ const PHOTOS_URLS = [
     "photos/25.jpg"
 ];
 
-DESCRIPTION_DATA = [
+const DESCRIPTION_DATA = [
     "Если смогу, я сделаю это. Конец истории.",
     "Я не ленивый. Просто у меня нет мотивации.",
     "Я — это мы.",
@@ -69,16 +70,14 @@ DESCRIPTION_DATA = [
     "Да, я сумасшедшая. Быть нормальной — слишком скучно."
 ];
 
-const USERS_AVATARS = [
-    "avatar-1.svg",
-    "avatar-2.svg",
-    "avatar-3.svg",
-    "avatar-4.svg",
-    "avatar-5.svg",
-    "avatar-6.svg",
-]
-
-const COMMENTS_DATA = [];
+const AVATARS_DATA = [
+    "img/avatar-1.svg",
+    "img/avatar-2.svg",
+    "img/avatar-3.svg",
+    "img/avatar-4.svg",
+    "img/avatar-5.svg",
+    "img/avatar-6.svg",
+];
 
 const PICTURES_DATA = [];
 
@@ -86,22 +85,24 @@ const getRandomInteger = (minValue, maxValue) => {
     return Math.floor(Math.random() * (maxValue - minValue)) + minValue;
 }
 
-
-
 const generateCommentsData = () => {
+    const COMMENTS_DATA = [];
+
     for (let index = 0; index < getRandomInteger(MIN_NUMBER_COMMENT, MAX_NUMBER_COMMENTS); index++) {
         COMMENTS_DATA.push({
-            avatar: USERS_AVATARS[index],
+            avatar: AVATARS_DATA[getRandomInteger(MIN_NUMBER_AVATAR, AVATARS_DATA.length - 1)],
             message: MESSAGE_DATA[getRandomInteger(MIN_NUMBER_MESSAGE, MESSAGE_DATA.length - 1)],
             name: USERS_NAME[getRandomInteger(MIN_NUMBER_NAME, USERS_NAME.length - 1)]
         })
     }
+
+    return COMMENTS_DATA;
 }
 
 const generatePicturesData = () => {
     for (let index = 0; index < PHOTOS_URLS.length; index++) {
         PICTURES_DATA.push({
-            comments: COMMENTS_DATA[getRandomInteger(MIN_NUMBER_COMMENT, COMMENTS_DATA.length - 1)],
+            comments: generateCommentsData(),
             likes: getRandomInteger(MIN_NUMBER_LIKES, MAX_NUMBER_LIKES),
             image: PHOTOS_URLS[index],
             description: DESCRIPTION_DATA[getRandomInteger(MIN_NUMBER_DESCRIPTION, DESCRIPTION_DATA.length - 1)]
@@ -131,25 +132,26 @@ const renderAllPictures = () => {
     picturesContainer.append(picturesFragment);
 }
 
-const renderBigPicture = (evt) => {
+const renderBigPicture = () => {
     bigPicture.classList.remove("hidden");
 
-    bigPicture.querySelector(".big-picture__img").textContent = evt.avatar;
-    bigPicture.querySelector(".likes-count").textContent = evt.likes;
-    bigPicture.querySelector(".comments-count").textContent = evt.comments.length;
-    bigPicture.querySelector(".social__comments").textContent = evt.comments;
-    bigPicture.querySelector(".social__caption").textContent = evt.description;
+    bigPicture.querySelector(".big-picture__img").src = PICTURES_DATA[pictureID].avatar;
+    bigPicture.querySelector(".likes-count").textContent = PICTURES_DATA[pictureID].likes;
+    bigPicture.querySelector(".comments-count").textContent = PICTURES_DATA[pictureID].comments.length;
+    bigPicture.querySelector(".social__text").textContent = PICTURES_DATA[pictureID].comments;
+    bigPicture.querySelector(".social__caption").textContent = PICTURES_DATA[pictureID].description;
 }
 
 const handlePictureClick = (evt) => {
-    renderBigPicture(evt);
+    renderBigPicture();
 
-    const idPicture = evt.currentTarget.getAttribute("data-number");
+    const pictureID = evt.currentTarget.getAttribute("data-number");
+    console.log(pictureID);
 }
 
-const miniaturs = [...document.querySelectorAll(".picture__img")];
-
 const setPicturesClickListeners = () => {
+    const miniaturs = document.querySelectorAll(".picture__img");
+
     miniaturs.forEach((evt) => evt.addEventListener("click", handlePictureClick(evt)));
 }
 
