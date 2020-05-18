@@ -7,9 +7,6 @@ const MIN_NUMBER_MESSAGE = 0;
 const MIN_NUMBER_NAME = 0;
 const MIN_NUMBER_DESCRIPTION = 0;
 
-const pictureTemplate = document.querySelector("#picture").content.querySelector(".picture");
-const bigPicture = document.querySelector(".big-picture");
-
 const MESSAGE_DATA = [
     "Всё отлично!",
     "В целом всё неплохо. Но не всё.",
@@ -111,6 +108,8 @@ const generatePicturesData = () => {
 }
 
 const createPicture = (picture, index) => {
+    const pictureTemplate = document.querySelector("#picture").content.querySelector(".picture");
+
     const image = pictureTemplate.cloneNode(true);
 
     image.querySelector(".picture__comments").textContent = picture.comments.length;
@@ -132,21 +131,25 @@ const renderAllPictures = () => {
     picturesContainer.append(picturesFragment);
 }
 
-const renderBigPicture = (picture) => {
+const renderBigPicture = (pictureID) => {
+    const bigPicture = document.querySelector(".big-picture");
+    const commentsList = document.querySelectorAll(".social__comment");
+
     bigPicture.classList.remove("hidden");
 
-    bigPicture.querySelector(".big-picture__img").src = PICTURES_DATA[picture].avatar;
-    bigPicture.querySelector(".likes-count").textContent = PICTURES_DATA[picture].likes;
-    bigPicture.querySelector(".comments-count").textContent = PICTURES_DATA[picture].comments.length;
-    bigPicture.querySelector(".social__text").textContent = PICTURES_DATA[picture].comments;
-    bigPicture.querySelector(".social__caption").textContent = PICTURES_DATA[picture].description;
+    bigPicture.querySelector(".big-picture__img").querySelector("img").src = PICTURES_DATA[pictureID].image;
+    bigPicture.querySelector(".comments-count").textContent = PICTURES_DATA[pictureID].comments.length;
+    bigPicture.querySelector(".social__caption").textContent = PICTURES_DATA[pictureID].description;
+    bigPicture.querySelector(".likes-count").textContent = PICTURES_DATA[pictureID].likes;
 
-    return bigPicture;
+    commentsList.forEach((element, index) => {
+        element.querySelector(".social__picture").src = PICTURES_DATA[pictureID].comments[index].avatar;
+        element.querySelector(".social__text").textContent = PICTURES_DATA[pictureID].comments[index].message;
+    });
 }
 
 const handlePictureClick = (evt) => {
-    const pictureID = evt.currentTarget.getAttribute("data-number");
-    console.log(evt.currentTarget.getAttribute("data-number"));
+    const pictureID = evt.currentTarget.parentNode.getAttribute("data-number");
     renderBigPicture(pictureID);
 }
 
@@ -156,7 +159,13 @@ const setPicturesClickListeners = () => {
     miniaturs.forEach((evt) => evt.addEventListener("click", handlePictureClick));
 }
 
+const addClassVisuallyHidden = () => {
+    document.querySelector(".social__comment-count").classList.add("visually-hidden");
+    document.querySelector(".comments-loader").classList.add("visually-hidden");
+}
+
 generateCommentsData();
 generatePicturesData();
 renderAllPictures();
 setPicturesClickListeners();
+addClassVisuallyHidden();
