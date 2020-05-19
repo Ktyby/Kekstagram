@@ -131,9 +131,47 @@ const renderAllPictures = () => {
     picturesContainer.append(picturesFragment);
 }
 
+const clearContentsOfElement = (element) => {
+    element.innerHTML = "";
+}
+
+const createComments = (pictureID) => {
+    const fragment = new DocumentFragment();
+    
+    for (let index = 0; index < PICTURES_DATA[pictureID].comments.length; index++) {
+        const li = document.createElement('li');
+        const img = document.createElement("img");
+        const paragraph = document.createElement("p");
+
+        li.append(img);
+        li.append(paragraph);
+
+        li.classList.add("social__comment");
+        img.classList.add("social__picture");
+        paragraph.classList.add("social__text");
+
+        fragment.append(li);
+    }
+
+    return fragment;
+}
+
+const renderCommentsForBigPicture = (pictureID) => {
+    const commentsList = document.querySelector(".social__comments");
+    clearContentsOfElement(commentsList);
+
+    commentsList.append(createComments(pictureID));
+
+    const commentList = document.querySelectorAll(".social__comment");
+
+    commentList.forEach((element, index) => {
+        element.querySelector(".social__picture").src = PICTURES_DATA[pictureID].comments[index].avatar;
+        element.querySelector(".social__text").textContent = PICTURES_DATA[pictureID].comments[index].message;
+    });
+}
+
 const renderBigPicture = (pictureID) => {
     const bigPicture = document.querySelector(".big-picture");
-    const commentsList = document.querySelectorAll(".social__comment");
 
     bigPicture.classList.remove("hidden");
 
@@ -141,15 +179,12 @@ const renderBigPicture = (pictureID) => {
     bigPicture.querySelector(".comments-count").textContent = PICTURES_DATA[pictureID].comments.length;
     bigPicture.querySelector(".social__caption").textContent = PICTURES_DATA[pictureID].description;
     bigPicture.querySelector(".likes-count").textContent = PICTURES_DATA[pictureID].likes;
-
-    commentsList.forEach((element, index) => {
-        element.querySelector(".social__picture").src = PICTURES_DATA[pictureID].comments[index].avatar;
-        element.querySelector(".social__text").textContent = PICTURES_DATA[pictureID].comments[index].message;
-    });
 }
 
 const handlePictureClick = (evt) => {
     const pictureID = evt.currentTarget.parentNode.getAttribute("data-number");
+    
+    renderCommentsForBigPicture(pictureID);
     renderBigPicture(pictureID);
 }
 
