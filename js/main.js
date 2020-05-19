@@ -6,6 +6,7 @@ const MIN_NUMBER_AVATAR = 0;
 const MIN_NUMBER_MESSAGE = 0;
 const MIN_NUMBER_NAME = 0;
 const MIN_NUMBER_DESCRIPTION = 0;
+const MAX_SHOWN_COMMENTS_COUNT = 5;
 
 const MESSAGE_DATA = [
     "Всё отлично!",
@@ -138,7 +139,7 @@ const clearContentsOfElement = (element) => {
 const createComments = (pictureID) => {
     const fragment = new DocumentFragment();
     
-    for (let index = 0; index < PICTURES_DATA[pictureID].comments.length; index++) {
+    for (let index = 0; index < MAX_SHOWN_COMMENTS_COUNT; index++) {
         const li = document.createElement('li');
         const img = document.createElement("img");
         const paragraph = document.createElement("p");
