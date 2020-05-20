@@ -99,6 +99,10 @@ const getRandomDescription = () => {
     return getRandomInteger(MIN_NUMBER_DESCRIPTION, DESCRIPTION_DATA.length - 1);
 }
 
+const getRandomLikes = () => {
+    return getRandomInteger(MIN_NUMBER_LIKES, MAX_NUMBER_LIKES);
+}
+
 const generateCommentsData = () => {
     const commentsData = [];
 
@@ -117,7 +121,7 @@ const generatePicturesData = () => {
     for (let index = 0; index < PHOTOS_URLS.length; index++) {
         picturesData.push({
             comments: generateCommentsData(),
-            likes: getRandomInteger(MIN_NUMBER_LIKES, MAX_NUMBER_LIKES),
+            likes: getRandomLikes(),
             image: PHOTOS_URLS[index],
             description: DESCRIPTION_DATA[getRandomDescription()]
         })
