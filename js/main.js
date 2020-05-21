@@ -83,7 +83,7 @@ const clearContentsOfElement = (element) => {
     element.innerHTML = "";
 }
 
-const showElement = (element) => {
+const addClassHidden = (element) => {
     element.classList.remove("hidden");
 }
 
@@ -175,7 +175,7 @@ const renderAllPictures = () => {
 const renderBigPicture = (pictureID) => {
     const bigPicture = document.querySelector(".big-picture");
 
-    showElement(bigPicture);
+    addClassHidden(bigPicture);
 
     bigPicture.querySelector(".big-picture__img").querySelector("img").src = picturesData[pictureID].image;
     bigPicture.querySelector(".comments-count").textContent = picturesData[pictureID].comments.length;
@@ -183,7 +183,7 @@ const renderBigPicture = (pictureID) => {
     bigPicture.querySelector(".likes-count").textContent = picturesData[pictureID].likes;
 
     const renderCommentsForBigPicture = (pictureID) => {
-        const commentsList = document.querySelector(".social__comments");
+        const commentsList = bigPicture.querySelector(".social__comments");
         clearContentsOfElement(commentsList);
     
         const createComments = (pictureID) => {
@@ -200,11 +200,11 @@ const renderBigPicture = (pictureID) => {
                 li.classList.add("social__comment");
                 img.classList.add("social__picture");
                 paragraph.classList.add("social__text");
+
+                img.src = picturesData[pictureID].comments[index].avatar; 
+                paragraph.textContent = picturesData[pictureID].comments[index].message; 
         
                 fragment.append(li);
-
-                img.src = picturesData[pictureID].comments[index].avatar;
-                paragraph.textContent = picturesData[pictureID].comments[index].message;
             }
         
             return fragment;
