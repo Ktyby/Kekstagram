@@ -1,6 +1,6 @@
 const MIN_NUMBER_LIKES = 15;
 const MAX_NUMBER_LIKES = 200;
-const MIN_NUMBER_COMMENT = 5;
+const MIN_NUMBER_COMMENT = 0;
 const MAX_NUMBER_COMMENTS = 20;
 const MIN_NUMBER_AVATAR = 0;
 const MIN_NUMBER_MESSAGE = 0;
@@ -79,69 +79,81 @@ const AVATARS_DATA = [
 
 const picturesData = [];
 
+const clearContentsOfElement = (element) => {
+    element.innerHTML = "";
+}
+
+const showElement = (element) => {
+    element.classList.remove("hidden");
+}
+
+const hideElement = (element) => {
+    element.classList.add("visually-hidden");
+}
+
 const getRandomInteger = (minValue, maxValue) => {
     return Math.floor(Math.random() * (maxValue - minValue)) + minValue;
 }
 
-const getRandomAvatar = () => {
-    return getRandomInteger(MIN_NUMBER_AVATAR, AVATARS_DATA.length - 1);
-}
-
-const getRandomMessage = () => {
-    return getRandomInteger(MIN_NUMBER_MESSAGE, MESSAGE_DATA.length - 1);
-}
-
-const getRandomName = () => {
-    return getRandomInteger(MIN_NUMBER_NAME, USERS_NAME.length - 1);
-}
-
-const getRandomDescription = () => {
-    return getRandomInteger(MIN_NUMBER_DESCRIPTION, DESCRIPTION_DATA.length - 1);
-}
-
-const getRandomLikes = () => {
-    return getRandomInteger(MIN_NUMBER_LIKES, MAX_NUMBER_LIKES);
-}
-
-const generateCommentsData = () => {
-    const commentsData = [];
-
-    for (let index = 0; index < getRandomInteger(MIN_NUMBER_COMMENT, MAX_NUMBER_COMMENTS); index++) {
-        commentsData.push({
-            avatar: AVATARS_DATA[getRandomAvatar()],
-            message: MESSAGE_DATA[getRandomMessage()],
-            name: USERS_NAME[getRandomName()]
-        })
+const generatePicturesData = () => {
+    const generateCommentsData = () => {
+        const commentsData = [];
+    
+        const getRandomAvatar = () => {
+            return AVATARS_DATA[getRandomInteger(MIN_NUMBER_AVATAR, AVATARS_DATA.length - 1)];
+        }
+        
+        const getRandomMessage = () => {
+            return MESSAGE_DATA[getRandomInteger(MIN_NUMBER_MESSAGE, MESSAGE_DATA.length - 1)];
+        }
+        
+        const getRandomName = () => {
+            return USERS_NAME[getRandomInteger(MIN_NUMBER_NAME, USERS_NAME.length - 1)];
+        }
+    
+        for (let index = 0; index < getRandomInteger(MIN_NUMBER_COMMENT, MAX_NUMBER_COMMENTS); index++) {
+            commentsData.push({
+                avatar: getRandomAvatar(),
+                message: getRandomMessage(),
+                name: getRandomName()
+            })
+        }
+    
+        return commentsData;
     }
 
-    return commentsData;
-}
+    const getRandomDescription = () => {
+        return DESCRIPTION_DATA[getRandomInteger(MIN_NUMBER_DESCRIPTION, DESCRIPTION_DATA.length - 1)];
+    }
+    
+    const getRandomLikes = () => {
+        return getRandomInteger(MIN_NUMBER_LIKES, MAX_NUMBER_LIKES);
+    }
 
-const generatePicturesData = () => {
     for (let index = 0; index < PHOTOS_URLS.length; index++) {
         picturesData.push({
             comments: generateCommentsData(),
             likes: getRandomLikes(),
             image: PHOTOS_URLS[index],
-            description: DESCRIPTION_DATA[getRandomDescription()]
+            description: getRandomDescription()
         })
     }
 }
 
-const createPicture = (picture, index) => {
-    const pictureTemplate = document.querySelector("#picture").content.querySelector(".picture");
-
-    const image = pictureTemplate.cloneNode(true);
-
-    image.querySelector(".picture__comments").textContent = picture.comments.length;
-    image.querySelector(".picture__likes").textContent = picture.likes;
-    image.querySelector(".picture__img").src = picture.image;
-    image.setAttribute("data-number", index);
-
-    return image;
-}
-
 const renderAllPictures = () => {
+    const createPicture = (picture, index) => {
+        const pictureTemplate = document.querySelector("#picture").content.querySelector(".picture");
+    
+        const image = pictureTemplate.cloneNode(true);
+    
+        image.querySelector(".picture__comments").textContent = picture.comments.length;
+        image.querySelector(".picture__likes").textContent = picture.likes;
+        image.querySelector(".picture__img").src = picture.image;
+        image.setAttribute("data-number", index);
+    
+        return image;
+    }
+
     const picturesContainer = document.querySelector(".pictures");
     const picturesFragment = document.createDocumentFragment();
 
@@ -160,54 +172,48 @@ const renderAllPictures = () => {
     setPicturesClickListeners();
 }
 
-const clearContentsOfElement = (element) => {
-    element.innerHTML = "";
-}
-
-const renderCommentsForBigPicture = (pictureID) => {
-    const commentsList = document.querySelector(".social__comments");
-    clearContentsOfElement(commentsList);
-
-    const createComments = (pictureID) => {
-        const fragment = new DocumentFragment();
-        
-        for (let index = 0; index < MAX_SHOWN_COMMENTS_COUNT; index++) {
-            const li = document.createElement('li');
-            const img = document.createElement("img");
-            const paragraph = document.createElement("p");
-    
-            li.append(img);
-            li.append(paragraph);
-    
-            li.classList.add("social__comment");
-            img.classList.add("social__picture");
-            paragraph.classList.add("social__text");
-    
-            fragment.append(li);
-        }
-    
-        return fragment;
-    }
-    
-    commentsList.append(createComments(pictureID));
-
-    const commentList = document.querySelectorAll(".social__comment");
-
-    commentList.forEach((element, index) => {
-        element.querySelector(".social__picture").src = picturesData[pictureID].comments[index].avatar;
-        element.querySelector(".social__text").textContent = picturesData[pictureID].comments[index].message;
-    });
-}
-
 const renderBigPicture = (pictureID) => {
     const bigPicture = document.querySelector(".big-picture");
 
-    bigPicture.classList.remove("hidden");
+    showElement(bigPicture);
 
     bigPicture.querySelector(".big-picture__img").querySelector("img").src = picturesData[pictureID].image;
     bigPicture.querySelector(".comments-count").textContent = picturesData[pictureID].comments.length;
     bigPicture.querySelector(".social__caption").textContent = picturesData[pictureID].description;
     bigPicture.querySelector(".likes-count").textContent = picturesData[pictureID].likes;
+
+    const renderCommentsForBigPicture = (pictureID) => {
+        const commentsList = document.querySelector(".social__comments");
+        clearContentsOfElement(commentsList);
+    
+        const createComments = (pictureID) => {
+            const fragment = new DocumentFragment();
+            
+            for (let index = 0; index < Math.min(picturesData[pictureID].comments.length, MAX_SHOWN_COMMENTS_COUNT); index++) {
+                const li = document.createElement('li');
+                const img = document.createElement("img");
+                const paragraph = document.createElement("p");
+        
+                li.append(img);
+                li.append(paragraph);
+        
+                li.classList.add("social__comment");
+                img.classList.add("social__picture");
+                paragraph.classList.add("social__text");
+        
+                fragment.append(li);
+
+                img.src = picturesData[pictureID].comments[index].avatar;
+                paragraph.textContent = picturesData[pictureID].comments[index].message;
+            }
+        
+            return fragment;
+        }
+        
+        commentsList.append(createComments(pictureID));
+    }
+
+    renderCommentsForBigPicture(pictureID);
 
     const removePicturesClickListeners = () => {
         const miniaturs = document.querySelectorAll(".picture__img");
@@ -225,12 +231,7 @@ const handlePictureClick = (evt) => {
     
     hideElement(commentCount);
     hideElement(commentsLoader);
-    renderCommentsForBigPicture(pictureID);
     renderBigPicture(pictureID);
-}
-
-const hideElement = (element) => {
-    element.classList.add("visually-hidden");
 }
 
 generatePicturesData();
