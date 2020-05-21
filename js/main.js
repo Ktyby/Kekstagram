@@ -83,12 +83,12 @@ const clearContentsOfElement = (element) => {
     element.innerHTML = "";
 }
 
-const addClassHidden = (element) => {
+const showElement = (element) => {
     element.classList.remove("hidden");
 }
 
 const hideElement = (element) => {
-    element.classList.add("visually-hidden");
+    element.classList.add("hidden");
 }
 
 const getRandomInteger = (minValue, maxValue) => {
@@ -164,7 +164,7 @@ const renderAllPictures = () => {
     picturesContainer.append(picturesFragment);
 
     const setPicturesClickListeners = () => {
-        const miniaturs = document.querySelectorAll(".picture__img");
+        const miniaturs = picturesContainer.querySelectorAll(".picture__img");
     
         miniaturs.forEach((evt) => evt.addEventListener("click", handlePictureClick));
     }
@@ -175,9 +175,9 @@ const renderAllPictures = () => {
 const renderBigPicture = (pictureID) => {
     const bigPicture = document.querySelector(".big-picture");
 
-    addClassHidden(bigPicture);
+    showElement(bigPicture);
 
-    bigPicture.querySelector(".big-picture__img").querySelector("img").src = picturesData[pictureID].image;
+    bigPicture.querySelector(".big-picture__img img").src = picturesData[pictureID].image;
     bigPicture.querySelector(".comments-count").textContent = picturesData[pictureID].comments.length;
     bigPicture.querySelector(".social__caption").textContent = picturesData[pictureID].description;
     bigPicture.querySelector(".likes-count").textContent = picturesData[pictureID].likes;
@@ -226,11 +226,9 @@ const renderBigPicture = (pictureID) => {
 
 const handlePictureClick = (evt) => {
     const pictureID = evt.currentTarget.parentNode.getAttribute("data-number");
-    const commentCount = document.querySelector(".social__comment-count");
-    const commentsLoader = document.querySelector(".comments-loader");
-    
-    hideElement(commentCount);
-    hideElement(commentsLoader);
+    const commentCount = document.querySelector(".social__comment-count").classList.add("visually-hidden");
+    const commentsLoader = document.querySelector(".comments-loader").classList.add("visually-hidden");
+
     renderBigPicture(pictureID);
 }
 
