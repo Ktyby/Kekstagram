@@ -1,6 +1,6 @@
 const MIN_NUMBER_LIKES = 15;
 const MAX_NUMBER_LIKES = 200;
-const MIN_NUMBER_COMMENT = 0;
+const MIN_NUMBER_COMMENTS = 0;
 const MAX_NUMBER_COMMENTS = 20;
 const MIN_NUMBER_AVATAR = 0;
 const MIN_NUMBER_MESSAGE = 0;
@@ -55,7 +55,7 @@ const PHOTOS_URLS = [
     "photos/25.jpg"
 ];
 
-const DESCRIPTION_DATA = [
+const DESCRIPTIONS_DATA = [
     "Если смогу, я сделаю это. Конец истории.",
     "Я не ленивый. Просто у меня нет мотивации.",
     "Я — это мы.",
@@ -111,7 +111,9 @@ const generatePicturesData = () => {
             return USERS_NAME[getRandomInteger(MIN_NUMBER_NAME, USERS_NAME.length - 1)];
         }
     
-        for (let index = 0; index < getRandomInteger(MIN_NUMBER_COMMENT, MAX_NUMBER_COMMENTS); index++) {
+        const randomCountComments = getRandomInteger(MIN_NUMBER_COMMENTS, MAX_NUMBER_COMMENTS)
+
+        for (let index = 0; index < randomQuantityComments; index++) {
             commentsData.push({
                 avatar: getRandomAvatar(),
                 message: getRandomMessage(),
@@ -123,7 +125,7 @@ const generatePicturesData = () => {
     }
 
     const getRandomDescription = () => {
-        return DESCRIPTION_DATA[getRandomInteger(MIN_NUMBER_DESCRIPTION, DESCRIPTION_DATA.length - 1)];
+        return DESCRIPTIONS_DATA[getRandomInteger(MIN_NUMBER_DESCRIPTION, DESCRIPTIONS_DATA.length - 1)];
     }
     
     const getRandomLikes = () => {
