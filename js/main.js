@@ -111,7 +111,7 @@ const generatePicturesData = () => {
             return USERS_NAME[getRandomInteger(MIN_NUMBER_NAME, USERS_NAME.length - 1)];
         }
     
-        const randomCountComments = getRandomInteger(MIN_NUMBER_COMMENTS, MAX_NUMBER_COMMENTS)
+        const randomQuantityComments = getRandomInteger(MIN_NUMBER_COMMENTS, MAX_NUMBER_COMMENTS)
 
         for (let index = 0; index < randomQuantityComments; index++) {
             commentsData.push({
