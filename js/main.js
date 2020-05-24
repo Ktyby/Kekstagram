@@ -172,7 +172,9 @@ const renderAllPictures = () => {
   const setPicturesClickListeners = () => {
     const miniaturs = picturesContainer.querySelectorAll(".picture__img");
   
-    miniaturs.forEach((evt) => evt.addEventListener("click", handlePictureClick));
+    miniaturs.forEach((evt) => {
+      evt.addEventListener("click", handlePictureClick)
+    });
   }
 
   setPicturesClickListeners();
@@ -238,7 +240,9 @@ const renderBigPicture = (pictureID) => {
   const removePicturesClickListeners = () => {
     const miniaturs = document.querySelectorAll(".picture__img");
   
-    miniaturs.forEach((evt) => evt.removeEventListener("click", handlePictureClick));
+    miniaturs.forEach((evt) => {
+      evt.removeEventListener("click", handlePictureClick)
+    });
   }
 
   removePicturesClickListeners();
