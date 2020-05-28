@@ -243,5 +243,18 @@ const handlePictureClick = (evt) => {
   renderBigPicture(pictureID);
 }
 
+const setFileUploadChangeListeners = () => {
+  const uploadPicture = document.querySelector(".img-upload__input");
+
+  uploadPicture.addEventListener("change", handleFileUploadChange);
+}
+
+const handleFileUploadChange = () => {
+  uploadForm = document.querySelector(".img-upload__overlay");
+
+  showElement(uploadForm);
+}
+
+setFileUploadChangeListeners();
 generatePicturesData();
 renderAllPictures();
