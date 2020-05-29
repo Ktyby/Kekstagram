@@ -152,8 +152,8 @@ const renderAllPictures = () => {
   const setPicturesClickListeners = () => {
     const miniaturs = picturesContainer.querySelectorAll(".picture__img");
   
-    miniaturs.forEach((evt) => {
-      evt.addEventListener("click", handlePictureClick)
+    miniaturs.forEach((picture) => {
+      picture.addEventListener("click", handlePictureClick)
     });
   }
 
@@ -227,8 +227,8 @@ const renderBigPicture = (pictureID) => {
   const removePicturesClickListeners = () => {
     const miniaturs = document.querySelectorAll(".picture__img");
   
-    miniaturs.forEach((evt) => {
-      evt.removeEventListener("click", handlePictureClick)
+    miniaturs.forEach((picture) => {
+      picture.removeEventListener("click", handlePictureClick)
     });
   }
 
@@ -250,11 +250,25 @@ const setFileUploadChangeListeners = () => {
 }
 
 const handleFileUploadChange = () => {
-  uploadForm = document.querySelector(".img-upload__overlay");
+  const uploadForm = document.querySelector(".img-upload__overlay");
 
   showElement(uploadForm);
 }
 
+const setHideFormEditClickListeners = () => {
+  const uploadForm = document.querySelector(".img-upload__overlay");
+
+  uploadForm.addEventListener("keydown", handleKeyBoardClick);
+}
+
+const handleKeyBoardClick = (evt) => {
+  console.log(evt);
+  if (evt.code == "Escape") {
+    hideElement(uploadForm); 
+  }
+}
+
+setHideFormEditClickListeners();
 setFileUploadChangeListeners();
 generatePicturesData();
 renderAllPictures();
