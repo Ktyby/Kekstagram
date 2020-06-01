@@ -243,32 +243,94 @@ const handlePictureClick = (evt) => {
   renderBigPicture(pictureID);
 }
 
-const setFileUploadChangeListeners = () => {
-  const uploadPicture = document.querySelector(".img-upload__input");
-
-  uploadPicture.addEventListener("change", handleFileUploadChange);
-}
-
-const handleFileUploadChange = () => {
-  const uploadForm = document.querySelector(".img-upload__overlay");
-
-  showElement(uploadForm);
-}
-
-const setHideFormEditClickListeners = () => {
-  const uploadForm = document.querySelector(".img-upload__overlay");
-
-  uploadForm.addEventListener("keydown", handleKeyBoardClick);
-}
-
-const handleKeyBoardClick = (evt) => {
-  console.log(evt);
-  if (evt.code == "Escape") {
-    hideElement(uploadForm); 
+const initFileUpload = () => {
+  const setFileUploadChangeListeners = () => {
+    const uploadPicture = document.querySelector(".img-upload__input");
+  
+    uploadPicture.addEventListener("change", handleFileUploadChange);
   }
+  
+  const handleFileUploadChange = () => {
+    const uploadForm = document.querySelector(".img-upload__overlay");
+  
+    showElement(uploadForm);
+  }
+  
+  const setHideFormEditClickListeners = () => {
+    const buttonClosingFormEditor = document.querySelector(".img-upload__cancel");
+
+    buttonClosingFormEditor.addEventListener("click", handleImageEditorCloseClick);
+    addEventListener("keydown", handleImageEditorCloseKeyDown);
+  }
+
+  const cleanFormEditor = () => {
+    document.querySelector(".img-upload__input").value = "";
+  }
+
+  const handleImageEditorCloseClick = () => {
+    const uploadForm = document.querySelector(".img-upload__overlay");
+
+    cleanFormEditor();
+    hideElement(uploadForm);
+  }
+  
+  const handleImageEditorCloseKeyDown = (evt) => {
+    const uploadForm = document.querySelector(".img-upload__overlay");
+
+    if (evt.code == "Escape") {
+      cleanFormEditor();
+      hideElement(uploadForm);     
+    }
+  }
+  
+  setHideFormEditClickListeners();
+  setFileUploadChangeListeners();
 }
 
-setHideFormEditClickListeners();
-setFileUploadChangeListeners();
+const applyEffects = () => {
+  const setEffectClickListeners = () => {
+    const effectsList = document.querySelector(".effects__list");
+
+    effectsList.addEventListener("click", handleEffectsClick);  
+  }
+
+  const handleEffectsClick = (evt) => {
+    if (evt.target.className != "effects__preview") return;
+
+    filterDefinition(evt);
+  }
+
+  const filterDefinition = (evt) => {
+    const upLoadPicture = document.querySelector("img-upload__preview img");
+
+    switch (evt.target.className) {
+      case "effects__preview--none":
+        upLoadPicture.style.filter = "";
+        break;
+      case "effects__preview--chrome":
+        upLoadPicture.style.filter = "grayscale(50%)";
+        break;
+      case "effects__preview--sepia":
+        upLoadPicture.style.filter = "sepia(150%)";
+        break;
+      case "effects__preview--marvin":
+        upLoadPicture.style.filter = "invert(100%)";
+        break;
+      case "effects__preview--phobos":
+        upLoadPicture.style.filter = "blur(3px)";
+        break; 
+      case "effects__preview--heat":
+        upLoadPicture.style.filter = "saturate(300%);";
+        break; 
+      default:
+        break;
+    }
+  }
+  
+  setEffectClickListeners();
+}
+
 generatePicturesData();
 renderAllPictures();
+initFileUpload();
+applyEffects();
