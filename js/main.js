@@ -78,6 +78,45 @@ const AVATARS = [
   "img/avatar-6.svg",
 ];
 
+const FILTERS = {
+  none: {
+    classFilter: "effects__preview--none",
+    cssProperty: "",
+    maxValue: 100,
+    minValue: 0
+  },
+  chrome: {
+    classFilter: "effects__preview--chrome",
+    cssProperty: "grayscale()",
+    maxValue: 1,
+    minValue: 0
+  },
+  sepia: {
+    classFilter: "effects__preview--sepia",
+    cssProperty: "sepia()",
+    maxValue: 1,
+    minValue: 0
+  },
+  marvin: {
+    classFilter: "effects__preview--marvin",
+    cssProperty: "invert()",
+    maxValue: 100,
+    minValue: 0
+  },
+  phobos: {
+    classFilter: "effects__preview--phobos",
+    cssProperty: "blur(5px)",
+    maxValue: "5px",
+    minValue: "0px"
+  },
+  heat: {
+    classFilter: "effects__preview--heat",
+    cssProperty: "brightness(3)",
+    maxValue: 3,
+    minValue: 0
+  }
+}
+
 const picturesData = [];
 
 const clearContentsOfElement = (element) => {
@@ -150,14 +189,33 @@ const renderAllPictures = () => {
   picturesContainer.append(picturesFragment);
 
   const setPicturesClickListeners = () => {
-    const miniaturs = picturesContainer.querySelectorAll(".picture__img");
+    const miniaturs = picturesContainer.querySelectorAll(".picture");
   
     miniaturs.forEach((picture) => {
-      picture.addEventListener("click", handlePictureClick)
+      picture.addEventListener("click", handlePictureClick);
+      picture.addEventListener("keydown", handlePictureKeyDown);
     });
   }
 
   setPicturesClickListeners();
+}
+
+const handlePictureClick = (evt) => {
+	document.querySelector(".social__comment-count").classList.add("visually-hidden");
+  document.querySelector(".comments-loader").classList.add("visually-hidden");
+  const pictureID = evt.currentTarget.getAttribute("data-number");
+
+  renderBigPicture(pictureID);
+}
+
+const handlePictureKeyDown = (evt) => {
+  if (evt.code == "Enter") {
+    document.querySelector(".social__comment-count").classList.add("visually-hidden");
+    document.querySelector(".comments-loader").classList.add("visually-hidden");
+    const pictureID = evt.currentTarget.getAttribute("data-number");
+
+    renderBigPicture(pictureID);
+  }
 }
 
 const renderBigPicture = (pictureID) => {
@@ -235,15 +293,9 @@ const renderBigPicture = (pictureID) => {
   removePicturesClickListeners();
 }
 
-const handlePictureClick = (evt) => {
-	document.querySelector(".social__comment-count").classList.add("visually-hidden");
-  document.querySelector(".comments-loader").classList.add("visually-hidden");
-  const pictureID = evt.currentTarget.parentNode.getAttribute("data-number");
-
-  renderBigPicture(pictureID);
-}
-
 const initFileUpload = () => {
+  const uploadForm = document.querySelector(".img-upload__overlay");
+
   const setFileUploadChangeListeners = () => {
     const uploadPicture = document.querySelector(".img-upload__input");
   
@@ -251,16 +303,14 @@ const initFileUpload = () => {
   }
   
   const handleFileUploadChange = () => {
-    const uploadForm = document.querySelector(".img-upload__overlay");
-  
     showElement(uploadForm);
   }
   
   const setHideFormEditClickListeners = () => {
-    const buttonClosingFormEditor = document.querySelector(".img-upload__cancel");
+    const editorCloseButton = document.querySelector(".img-upload__cancel");
 
-    buttonClosingFormEditor.addEventListener("click", handleImageEditorCloseClick);
-    addEventListener("keydown", handleImageEditorCloseKeyDown);
+    editorCloseButton.addEventListener("click", handleImageEditorCloseClick);
+    document.addEventListener("keydown", handleImageEditorCloseKeyDown);
   }
 
   const cleanFormEditor = () => {
@@ -268,15 +318,11 @@ const initFileUpload = () => {
   }
 
   const handleImageEditorCloseClick = () => {
-    const uploadForm = document.querySelector(".img-upload__overlay");
-
     cleanFormEditor();
     hideElement(uploadForm);
   }
   
   const handleImageEditorCloseKeyDown = (evt) => {
-    const uploadForm = document.querySelector(".img-upload__overlay");
-
     if (evt.code == "Escape") {
       cleanFormEditor();
       hideElement(uploadForm);     
@@ -288,46 +334,20 @@ const initFileUpload = () => {
 }
 
 const applyEffects = () => {
-  const setEffectClickListeners = () => {
-    const effectsList = document.querySelector(".effects__list");
+  const setEffectFocusListeners = () => {
+    const effectsRadio = document.querySelectorAll(".effects__radio");
 
-    effectsList.addEventListener("click", handleEffectsClick);  
+    effectsRadio.forEach((effect) => {
+      effect.addEventListener("focus", handleEffectsFocus);
+    });
   }
 
-  const handleEffectsClick = (evt) => {
-    if (evt.target.className != "effects__preview") return;
-
-    filterDefinition(evt);
-  }
-
-  const filterDefinition = (evt) => {
-    const upLoadPicture = document.querySelector("img-upload__preview img");
-
-    switch (evt.target.className) {
-      case "effects__preview--none":
-        upLoadPicture.style.filter = "";
-        break;
-      case "effects__preview--chrome":
-        upLoadPicture.style.filter = "grayscale(50%)";
-        break;
-      case "effects__preview--sepia":
-        upLoadPicture.style.filter = "sepia(150%)";
-        break;
-      case "effects__preview--marvin":
-        upLoadPicture.style.filter = "invert(100%)";
-        break;
-      case "effects__preview--phobos":
-        upLoadPicture.style.filter = "blur(3px)";
-        break; 
-      case "effects__preview--heat":
-        upLoadPicture.style.filter = "saturate(300%);";
-        break; 
-      default:
-        break;
-    }
+  const handleEffectsFocus = (evt) => {
+    const upLoadImage = document.querySelector(".img-upload__preview img");
+    upLoadImage.style.filter = FILTERS[evt.target.value].cssProperty;
   }
   
-  setEffectClickListeners();
+  setEffectFocusListeners();
 }
 
 generatePicturesData();
