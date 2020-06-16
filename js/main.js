@@ -1,3 +1,7 @@
+"use strict";
+
+// Глобальные константы //
+
 const MIN_NUMBER_LIKES = 15;
 const MAX_NUMBER_LIKES = 200;
 const MIN_NUMBER_COMMENTS = 0;
@@ -8,6 +12,8 @@ const MIN_INDEX_NAME = 0;
 const MIN_INDEX_DESCRIPTION = 0;
 const MAX_SHOWN_COMMENTS_COUNT = 5;
 const MAX_SHOWN_MINIATURS_COUNT = 25
+
+// Данные //
 
 const MESSAGES = [
   "Всё отлично!",
@@ -78,46 +84,54 @@ const AVATARS = [
   "img/avatar-6.svg",
 ];
 
-const FILTERS = {
+const EFFECTS = {
   none: {
     className: "effects__preview--none",
-    cssProperty: "",
-    maxValue: 100,
-    minValue: 0
+    cssProperty: "none",
+    maxValue: null,
+    minValue: null,
+    unit: ""
   },
   chrome: {
     className: "effects__preview--chrome",
-    cssProperty: "grayscale()",
+    cssProperty: "grayscale",
     maxValue: 1,
-    minValue: 0
+    minValue: 0,
+    unit: ""
   },
   sepia: {
     className: "effects__preview--sepia",
-    cssProperty: "sepia()",
+    cssProperty: "sepia",
     maxValue: 1,
-    minValue: 0
+    minValue: 0,
+    unit: ""
   },
   marvin: {
     className: "effects__preview--marvin",
-    cssProperty: "invert()",
+    cssProperty: "invert",
     maxValue: 100,
-    minValue: 0
+    minValue: 0,
+    unit: "%"
   },
   phobos: {
     className: "effects__preview--phobos",
-    cssProperty: "blur()",
-    maxValue: "5px",
-    minValue: "0px"
+    cssProperty: "blur",
+    maxValue: "3",
+    minValue: "0",
+    unit: "px"
   },
   heat: {
     className: "effects__preview--heat",
-    cssProperty: "brightness()",
+    cssProperty: "brightness",
     maxValue: 3,
-    minValue: 0
+    minValue: 1,
+    unit: ""
   }
 }
 
 const picturesData = [];
+
+// Общие функции //
 
 const clearContentsOfElement = (element) => {
   element.innerHTML = "";
@@ -139,6 +153,8 @@ const getRandomElementFromArray = (array, minValue = 0, maxValue = array.length 
 	return array[getRandomIntegerFromRange(minValue, maxValue)];
 }
 
+// Функции работы с миниатюрами //
+
 const generatePicturesData = () => {
   const generateCommentsData = () => {
     const commentsData = [];
@@ -152,6 +168,7 @@ const generatePicturesData = () => {
         name: getRandomElementFromArray(USER_NAMES, MIN_INDEX_NAME)
       })
     }
+
     return commentsData;
   }
 
@@ -166,6 +183,10 @@ const generatePicturesData = () => {
 }
 
 const renderAllPictures = () => {
+  const picturesContainer = document.querySelector(".pictures");
+  const picturesFragment = document.createDocumentFragment();
+  const miniaturs = picturesContainer.querySelectorAll(".picture");
+
   const createPicture = (picture, index) => {
     const pictureTemplate = document.querySelector("#picture").content.querySelector(".picture");
   
@@ -179,41 +200,37 @@ const renderAllPictures = () => {
     return image;
   }
 
-  const picturesContainer = document.querySelector(".pictures");
-  const picturesFragment = document.createDocumentFragment();
-
   picturesData.forEach((picture, index) => {
     picturesFragment.append(createPicture(picture, index));
   });
 
   picturesContainer.append(picturesFragment);
 
-  const setPicturesClickAndKeyDownListeners = () => {
-    const miniaturs = picturesContainer.querySelectorAll(".picture");
-  
+  const setPicturesListeners = () => {
     miniaturs.forEach((picture) => {
       picture.addEventListener("click", handlePictureClick);
       picture.addEventListener("keydown", handlePictureKeyDown);
     });
   }
 
-  setPicturesClickAndKeyDownListeners();
+  setPicturesListeners();
 }
 
 const getPictureAttribute = (evt) => {
-  const pictureID = evt.currentTarget.getAttribute("data-number");
-  renderBigPicture(pictureID);
+  return evt.currentTarget.getAttribute("data-number");
 }
 
 const handlePictureClick = (evt) => {
-  getPictureAttribute(evt);
+  renderBigPicture(getPictureAttribute(evt));
 }
 
 const handlePictureKeyDown = (evt) => {
   if (evt.code == "Enter") {
-    getPictureAttribute(evt);
+    renderBigPicture(getPictureAttribute(evt));
   }
 }
+
+// Функциии работы с большими изображениями //
 
 const renderBigPicture = (pictureID) => {
   const bigPicture = document.querySelector(".big-picture");
@@ -227,7 +244,8 @@ const renderBigPicture = (pictureID) => {
 
   const renderCommentsForBigPicture = (pictureID) => {
     const commentsList = bigPicture.querySelector(".social__comments");
-    clearContentsOfElement(commentsList);
+
+    clearContentsOfElement(commentsList); // Удаление первого комментария в вёрстке
     
     const createComments = (pictureID) => {
 			const fragment = new DocumentFragment();
@@ -275,12 +293,12 @@ const renderBigPicture = (pictureID) => {
     commentsList.append(createComments(pictureID));
   }
   
-  const hideCounterComments = () => {
+  const hideCommentsCounter = () => {
     document.querySelector(".social__comment-count").classList.add("visually-hidden");
     document.querySelector(".comments-loader").classList.add("visually-hidden");
   }
 
-  const removePicturesClickListeners = () => {
+  const removePicturesListeners = () => {
     const miniaturs = document.querySelectorAll(".picture__img");
   
     miniaturs.forEach((picture) => {
@@ -292,10 +310,12 @@ const renderBigPicture = (pictureID) => {
 	renderCommentsForBigPicture(pictureID);
 	assignDataForBigPicture();
   showElement(bigPicture);
-  hideCounterComments();
+  hideCommentsCounter();
 
-  removePicturesClickListeners();
+  removePicturesListeners();
 }
+
+// Функции для работы с редактором //
 
 const initFileUpload = () => {
   const uploadForm = document.querySelector(".img-upload__overlay");
@@ -310,33 +330,50 @@ const initFileUpload = () => {
   }
 
   const applyEffects = () => {
-    const slider = document.querySelector(".img-upload__effect-level");
+    const slider = uploadForm.querySelector(".img-upload__effect-level");
+
     const setEffectFocusListeners = () => {
-      const effectsRadio = document.querySelectorAll(".effects__radio");
+      const effectsRadio = uploadForm.querySelectorAll(".effects__radio");
   
       effectsRadio.forEach((effect) => {
         effect.addEventListener("focus", handleEffectsFocus);
       });
     }
-  
-    const handleEffectsFocus = (evt) => {
-      const upLoadImage = document.querySelector(".img-upload__preview img");
-      if (FILTERS[evt.target.value].className = "effects__preview--none") {
-        upLoadImage.style.filter = FILTERS[evt.target.value].cssProperty;
-        upLoadImage.classList.add(FILTERS[evt.target.value].className);
+
+    const addFilterDataToImage = (uploadImage, currentElement) => {
+      uploadImage.style.filter = EFFECTS[currentElement.value].cssProperty + "(" + EFFECTS[currentElement.value].maxValue + EFFECTS[currentElement.value].unit + ")";
+      uploadImage.classList.add(EFFECTS[currentElement.value].className);
+    }
+
+    const deleteFilterDataFromImage = (uploadImage) => {
+      uploadImage.style.filter = "";
+      uploadImage.className = "";
+    }
+
+    const applyEffect = (currentElement) => {
+      const uploadImage = uploadForm.querySelector(".img-upload__preview img");
+      if (currentElement.value === "none") {
         hideElement(slider);
+        deleteFilterDataFromImage(uploadImage);
       } else {
-        upLoadImage.style.filter = FILTERS[evt.target.value].cssProperty;
-        upLoadImage.classList.add(FILTERS[evt.target.value].className);
+        showElement(slider);
+        deleteFilterDataFromImage(uploadImage);
       }
 
+      addFilterDataToImage(uploadImage, currentElement);
+      console.log(uploadImage);
+
+    }
+  
+    const handleEffectsFocus = (evt) => {
+      applyEffect(evt.target);
     }
     
     setEffectFocusListeners();
   }
   
-  const setHideFormEditEventListeners = () => {
-    const editorCloseButton = document.querySelector(".img-upload__cancel");
+  const setHideFormEditListeners = () => {
+    const editorCloseButton = uploadForm.querySelector(".img-upload__cancel");
 
     editorCloseButton.addEventListener("click", handleImageEditorCloseClick);
     document.addEventListener("keydown", handleImageEditorCloseKeyDown);
@@ -346,25 +383,24 @@ const initFileUpload = () => {
     uploadInput.value = "";
   }
 
-  const hideEditorForm = () => {
+  const handleImageEditorCloseClick = () => {
     cleanUploadInput();
     hideElement(uploadForm);
-  }
-
-  const handleImageEditorCloseClick = () => {
-    hideEditorForm();
   }
   
   const handleImageEditorCloseKeyDown = (evt) => {
     if (evt.code == "Escape") {
-      hideEditorForm();   
+      cleanUploadInput();
+      hideElement(uploadForm);
     }
   }
   
   applyEffects();
-  setHideFormEditEventListeners();
+  setHideFormEditListeners();
   setFileUploadChangeListeners();
 }
+
+// Вызов основных функций//
 
 generatePicturesData();
 renderAllPictures();
