@@ -11,7 +11,8 @@ const MIN_INDEX_MESSAGE = 0;
 const MIN_INDEX_NAME = 0;
 const MIN_INDEX_DESCRIPTION = 0;
 const MAX_SHOWN_COMMENTS_COUNT = 5;
-const MAX_SHOWN_MINIATURS_COUNT = 25
+const MAX_SHOWN_MINIATURS_COUNT = 25;
+const MAX_SLIDER_VALUE = "100";
 
 // Данные //
 
@@ -207,6 +208,8 @@ const renderAllPictures = () => {
   picturesContainer.append(picturesFragment);
 
   const setPicturesListeners = () => {
+    const miniaturs = picturesContainer.querySelectorAll(".picture");
+
     miniaturs.forEach((picture) => {
       picture.addEventListener("click", handlePictureClick);
       picture.addEventListener("keydown", handlePictureKeyDown);
@@ -245,7 +248,7 @@ const renderBigPicture = (pictureID) => {
   const renderCommentsForBigPicture = (pictureID) => {
     const commentsList = bigPicture.querySelector(".social__comments");
 
-    clearContentsOfElement(commentsList); // Удаление первого комментария в вёрстке
+    clearContentsOfElement(commentsList); // Удаление первого комментария из вёрстки
     
     const createComments = (pictureID) => {
 			const fragment = new DocumentFragment();
@@ -259,21 +262,21 @@ const renderBigPicture = (pictureID) => {
         }
         
         const createAvatar = () => {
-          const avatarElement = document.createElement("img");
-          avatarElement.classList.add("social__picture");
+          const avatar = document.createElement("img");
+          avatar.classList.add("social__picture");
 
-          avatarElement.src = picturesData[pictureID].comments[index].avatar; 
+          avatar.src = picturesData[pictureID].comments[index].avatar; 
           
-          return avatarElement;
+          return avatar;
         }
 
         const createMessage = () => {
-          const messageElement = document.createElement("p");
-          messageElement.classList.add("social__text");
+          const message = document.createElement("p");
+          message.classList.add("social__text");
 
-          messageElement.textContent = picturesData[pictureID].comments[index].message; 
+          message.textContent = picturesData[pictureID].comments[index].message; 
 
-          return messageElement;
+          return message;
         }
 
         const comment = createComment();
@@ -318,51 +321,61 @@ const renderBigPicture = (pictureID) => {
 // Функции для работы с редактором //
 
 const initFileUpload = () => {
-  const uploadForm = document.querySelector(".img-upload__overlay");
+  const overlay = document.querySelector(".img-upload__overlay");
   const uploadInput = document.querySelector(".img-upload__input");
+  const imageEditor = overlay.querySelector(".img-upload__preview img");
 
   const setFileUploadChangeListeners = () => {
     uploadInput.addEventListener("change", handleFileUploadChange);
   }
   
   const handleFileUploadChange = () => {
-    showElement(uploadForm);
+    showElement(overlay);
   }
 
   const applyEffects = () => {
-    const slider = uploadForm.querySelector(".img-upload__effect-level");
+    const slider = overlay.querySelector(".img-upload__effect-level");
+    const pin = slider.querySelector(".effect-level__pin");
+    const depth = slider.querySelector(".effect-level__depth");
+
+    const removeFileUploadChangeListeners = () => {
+      uploadInput.removeEventListener("change", handleFileUploadChange);
+    }
 
     const setEffectFocusListeners = () => {
-      const effectsRadio = uploadForm.querySelectorAll(".effects__radio");
+      const effectsRadio = overlay.querySelectorAll(".effects__radio");
   
       effectsRadio.forEach((effect) => {
         effect.addEventListener("focus", handleEffectsFocus);
       });
     }
 
-    const addFilterDataToImage = (uploadImage, currentElement) => {
-      uploadImage.style.filter = EFFECTS[currentElement.value].cssProperty + "(" + EFFECTS[currentElement.value].maxValue + EFFECTS[currentElement.value].unit + ")";
-      uploadImage.classList.add(EFFECTS[currentElement.value].className);
+    const addFilterDataToImage = (currentElement) => {
+      imageEditor.style.filter = EFFECTS[currentElement.value].cssProperty + "(" + EFFECTS[currentElement.value].maxValue + EFFECTS[currentElement.value].unit + ")";
+      imageEditor.classList.add(EFFECTS[currentElement.value].className);
     }
 
-    const deleteFilterDataFromImage = (uploadImage) => {
-      uploadImage.style.filter = "";
-      uploadImage.className = "";
+    const deleteFilterDataFromImage = () => {
+      imageEditor.style.filter = "";
+      imageEditor.className = "";
+    }
+
+    const resettingSliderValue = () => {
+      pin.style.left = MAX_SLIDER_VALUE + "%";
+      depth.style.width = MAX_SLIDER_VALUE + "%";
     }
 
     const applyEffect = (currentElement) => {
-      const uploadImage = uploadForm.querySelector(".img-upload__preview img");
       if (currentElement.value === "none") {
         hideElement(slider);
-        deleteFilterDataFromImage(uploadImage);
       } else {
         showElement(slider);
-        deleteFilterDataFromImage(uploadImage);
       }
 
-      addFilterDataToImage(uploadImage, currentElement);
-      console.log(uploadImage);
-
+      removeFileUploadChangeListeners();
+      deleteFilterDataFromImage();
+      addFilterDataToImage(currentElement);
+      resettingSliderValue();
     }
   
     const handleEffectsFocus = (evt) => {
@@ -373,7 +386,7 @@ const initFileUpload = () => {
   }
   
   const setHideFormEditListeners = () => {
-    const editorCloseButton = uploadForm.querySelector(".img-upload__cancel");
+    const editorCloseButton = overlay.querySelector(".img-upload__cancel");
 
     editorCloseButton.addEventListener("click", handleImageEditorCloseClick);
     document.addEventListener("keydown", handleImageEditorCloseKeyDown);
@@ -385,13 +398,13 @@ const initFileUpload = () => {
 
   const handleImageEditorCloseClick = () => {
     cleanUploadInput();
-    hideElement(uploadForm);
+    hideElement(overlay);
   }
   
   const handleImageEditorCloseKeyDown = (evt) => {
     if (evt.code == "Escape") {
       cleanUploadInput();
-      hideElement(uploadForm);
+      hideElement(overlay);
     }
   }
   
