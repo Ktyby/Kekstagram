@@ -86,42 +86,42 @@ const AVATARS = [
 ];
 
 const Effects = {
-  none: {
+  NONE: {
     className: "effects__preview--none",
     cssProperty: "none",
     maxValue: null,
     minValue: null,
     unit: ""
   },
-  chrome: {
+  CHROME: {
     className: "effects__preview--chrome",
     cssProperty: "grayscale",
     maxValue: 1,
     minValue: 0,
     unit: ""
   },
-  sepia: {
+  SEPIA: {
     className: "effects__preview--sepia",
     cssProperty: "sepia",
     maxValue: 1,
     minValue: 0,
     unit: ""
   },
-  marvin: {
+  MARVIN: {
     className: "effects__preview--marvin",
     cssProperty: "invert",
     maxValue: 100,
     minValue: 0,
     unit: "%"
   },
-  phobos: {
+  PHOBOS: {
     className: "effects__preview--phobos",
     cssProperty: "blur",
     maxValue: "3",
     minValue: "0",
     unit: "px"
   },
-  heat: {
+  HEAT: {
     className: "effects__preview--heat",
     cssProperty: "brightness",
     maxValue: 3,
@@ -341,10 +341,11 @@ const initFileUpload = () => {
   uploadInput.addEventListener("change", handleFileUploadChange);
 
   const addEffectDataToImage = (currentElement) => {
-    uploadedImge.style.filter = `${Effects[currentElement.value].cssProperty}
-                                (${Effects[currentElement.value].maxValue}
-                                ${Effects[currentElement.value].unit})`;
-    uploadedImge.classList.add(Effects[currentElement.value].className);
+    console.log(currentElement.value);
+    uploadedImge.style.filter = `${Effects[currentElement.value.toUpperCase()].cssProperty}
+                                (${Effects[currentElement.value.toUpperCase()].maxValue}
+                                ${Effects[currentElement.value.toUpperCase()].unit})`;
+    uploadedImge.classList.add(Effects[currentElement.value.toUpperCase()].className);
   }
 
   const deleteOldEffectDataFromImage = () => {
@@ -374,20 +375,12 @@ const initFileUpload = () => {
     const effectsRadio = overlay.querySelectorAll(".effects__radio");
   
     effectsRadio.forEach((effect) => {
-      effect.addEventListener("focus", handleEffectsFocus);
+      effect.addEventListener("focus", handleEffectFocus);
     });
   }
 
-  const handleEffectsFocus = (evt) => {
+  const handleEffectFocus = (evt) => {
     applyEffect(evt.target);
-  }
-
-  const removeEffectFocusListeners = () => {
-    const effectsRadio = overlay.querySelectorAll(".effects__radio");
-
-    effectsRadio.forEach((effect) => {
-      effect.removeEventListener("focus", handleEffectsFocus);
-    });
   }
   
   const setEditFormListeners = () => {
@@ -401,15 +394,23 @@ const initFileUpload = () => {
   }
 
   const removeEditFormListeners = () => {
-    uploadInput.addEventListener("change", handleFileUploadChange);
     editorCloseButton.removeEventListener("click", handleImageEditorCloseClick);
     document.removeEventListener("keydown", handleImageEditorCloseKeyDown);
+
+    const removeEffectFocusListeners = () => {
+      const effectsRadio = overlay.querySelectorAll(".effects__radio");
+  
+      effectsRadio.forEach((effect) => {
+        effect.removeEventListener("focus", handleEffectFocus);
+      });
+    }
+
+    removeEffectFocusListeners();
   }
 
   const handleImageEditorCloseClick = () => {
     cleanUploadInput();
     hideElement(overlay);
-    removeEffectFocusListeners();
     removeEditFormListeners();
   }
   
@@ -417,7 +418,6 @@ const initFileUpload = () => {
     if (evt.code === "Escape") {
       cleanUploadInput();
       hideElement(overlay);
-      removeEffectFocusListeners();
       removeEditFormListeners();
     }
   }
