@@ -325,15 +325,16 @@ const initFileUpload = () => {
   const uploadInput = document.querySelector(".img-upload__input");
   const uploadedImge = overlay.querySelector(".img-upload__preview img");
   const editorCloseButton = overlay.querySelector(".img-upload__cancel");
+  const effectsRadio = overlay.querySelectorAll(".effects__radio");
   const slider = overlay.querySelector(".img-upload__effect-level");
   const pin = slider.querySelector(".effect-level__pin");
   const depth = slider.querySelector(".effect-level__depth");
   const effectValue = slider.querySelector(".effect-level__value");
+
   
   const handleFileUploadChange = () => {
     showElement(overlay);
     hideElement(slider); 
-    applyEffects();
     deleteOldEffectDataFromImage();    
     setEditFormListeners();
   }
@@ -341,11 +342,11 @@ const initFileUpload = () => {
   uploadInput.addEventListener("change", handleFileUploadChange);
 
   const addEffectDataToImage = (currentElement) => {
-    console.log(currentElement.value);
-    uploadedImge.style.filter = `${Effects[currentElement.value.toUpperCase()].cssProperty}
-                                (${Effects[currentElement.value.toUpperCase()].maxValue}
-                                ${Effects[currentElement.value.toUpperCase()].unit})`;
-    uploadedImge.classList.add(Effects[currentElement.value.toUpperCase()].className);
+    const effectName = Effects[currentElement.value.toUpperCase()]
+    uploadedImge.style.filter = `${effectName.cssProperty}
+                                (${effectName.maxValue}
+                                ${effectName.unit})`;
+    uploadedImge.classList.add(effectName.className);
   }
 
   const deleteOldEffectDataFromImage = () => {
@@ -371,22 +372,17 @@ const initFileUpload = () => {
     setSliderValue(MAX_SLIDER_VALUE);
   }
 
-  const applyEffects = () => {
-    const effectsRadio = overlay.querySelectorAll(".effects__radio");
-  
-    effectsRadio.forEach((effect) => {
-      effect.addEventListener("focus", handleEffectFocus);
-    });
-  }
-
   const handleEffectFocus = (evt) => {
     applyEffect(evt.target);
   }
   
   const setEditFormListeners = () => {
-    uploadInput.removeEventListener("change", handleFileUploadChange);
     editorCloseButton.addEventListener("click", handleImageEditorCloseClick);
     document.addEventListener("keydown", handleImageEditorCloseKeyDown);
+
+    effectsRadio.forEach((effect) => {
+      effect.addEventListener("focus", handleEffectFocus);
+    });
   }
 
   const cleanUploadInput = () => {
@@ -397,15 +393,9 @@ const initFileUpload = () => {
     editorCloseButton.removeEventListener("click", handleImageEditorCloseClick);
     document.removeEventListener("keydown", handleImageEditorCloseKeyDown);
 
-    const removeEffectFocusListeners = () => {
-      const effectsRadio = overlay.querySelectorAll(".effects__radio");
-  
-      effectsRadio.forEach((effect) => {
-        effect.removeEventListener("focus", handleEffectFocus);
-      });
-    }
-
-    removeEffectFocusListeners();
+    effectsRadio.forEach((effect) => {
+      effect.removeEventListener("focus", handleEffectFocus);
+    });
   }
 
   const handleImageEditorCloseClick = () => {
