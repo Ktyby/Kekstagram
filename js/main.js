@@ -85,7 +85,7 @@ const AVATARS = [
   "img/avatar-6.svg",
 ];
 
-const EFFECTS = {
+const Effects = {
   none: {
     className: "effects__preview--none",
     cssProperty: "none",
@@ -332,15 +332,19 @@ const initFileUpload = () => {
   
   const handleFileUploadChange = () => {
     showElement(overlay);
-    hideElement(slider);
+    hideElement(slider); 
     applyEffects();
+    deleteOldEffectDataFromImage();    
+    setEditFormListeners();
   }
 
+  uploadInput.addEventListener("change", handleFileUploadChange);
+
   const addEffectDataToImage = (currentElement) => {
-    uploadedImge.style.filter = `${EFFECTS[currentElement.value].cssProperty}
-                                (${EFFECTS[currentElement.value].maxValue}
-                                ${EFFECTS[currentElement.value].unit})`;
-    uploadedImge.classList.add(EFFECTS[currentElement.value].className);
+    uploadedImge.style.filter = `${Effects[currentElement.value].cssProperty}
+                                (${Effects[currentElement.value].maxValue}
+                                ${Effects[currentElement.value].unit})`;
+    uploadedImge.classList.add(Effects[currentElement.value].className);
   }
 
   const deleteOldEffectDataFromImage = () => {
@@ -387,7 +391,7 @@ const initFileUpload = () => {
   }
   
   const setEditFormListeners = () => {
-    uploadInput.addEventListener("change", handleFileUploadChange);
+    uploadInput.removeEventListener("change", handleFileUploadChange);
     editorCloseButton.addEventListener("click", handleImageEditorCloseClick);
     document.addEventListener("keydown", handleImageEditorCloseKeyDown);
   }
@@ -397,7 +401,7 @@ const initFileUpload = () => {
   }
 
   const removeEditFormListeners = () => {
-    uploadInput.removeEventListener("change", handleFileUploadChange);
+    uploadInput.addEventListener("change", handleFileUploadChange);
     editorCloseButton.removeEventListener("click", handleImageEditorCloseClick);
     document.removeEventListener("keydown", handleImageEditorCloseKeyDown);
   }
@@ -417,8 +421,6 @@ const initFileUpload = () => {
       removeEditFormListeners();
     }
   }
-  
-  setEditFormListeners();
 }
 
 // Вызов основных функций//
