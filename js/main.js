@@ -399,33 +399,34 @@ const initFileUpload = () => {
     });
   }
 
-  const cleanUploadInput = () => {
-    uploadInput.value = "";
-  }
+  const closeEditForm = () => {
+    const cleanUploadInput = () => {
+      uploadInput.value = "";
+    }
 
-  const removeEditFormListeners = () => {
-    editorCloseButton.removeEventListener("click", handleImageEditorCloseClick);
-    document.removeEventListener("keydown", handleImageEditorCloseKeyDown);
+    const removeEditFormListeners = () => {
+      editorCloseButton.removeEventListener("click", handleImageEditorCloseClick);
+      document.removeEventListener("keydown", handleImageEditorCloseKeyDown);
+  
+      effectsRadio.forEach((effect) => {
+        effect.removeEventListener("focus", handleEffectFocus);
+      });
+    }
 
-    effectsRadio.forEach((effect) => {
-      effect.removeEventListener("focus", handleEffectFocus);
-    });
-  }
-
-  const handleImageEditorCloseClick = () => {
     cleanUploadInput();
     hideElement(overlay);
     removeEditFormListeners();
     deleteOldEffectDataFromImage();
   }
+
+  const handleImageEditorCloseClick = () => {
+    closeEditForm();
+  }
   
   const handleImageEditorCloseKeyDown = (downEvt) => {
     isEscapeEvent(downEvt, (evt) => {
       evt.preventDefault();
-      cleanUploadInput();
-      hideElement(overlay);
-      removeEditFormListeners();
-      deleteOldEffectDataFromImage();
+      closeEditForm();
     });
   }
 }
