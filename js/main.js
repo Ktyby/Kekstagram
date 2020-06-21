@@ -350,18 +350,7 @@ const initFileUpload = () => {
   const handleFileUploadChange = () => {
     showElement(overlay);
     hideElement(slider); 
-    deleteOldEffectDataFromImage();    
     setEditFormListeners();
-  }
-
-  uploadInput.addEventListener("change", handleFileUploadChange);
-
-  const addEffectDataToImage = (currentElement) => {
-    const effect = Effects[currentElement.value.toUpperCase()];
-    uploadedImge.style.filter = `${effect.cssProperty}
-                                (${effect.maxValue}
-                                ${effect.unit})`;
-    uploadedImge.classList.add(effect.className);
   }
 
   const deleteOldEffectDataFromImage = () => {
@@ -369,17 +358,27 @@ const initFileUpload = () => {
     uploadedImge.className = "";
   }
 
-  const setSliderValue = (value) => {
-    pin.style.left = `${value}%`;
-    depth.style.width = `${value}%`;
-    effectValue.setAttribute("value", value);
-  }
+  uploadInput.addEventListener("change", handleFileUploadChange);
 
   const applyEffect = (currentElement) => {
     if (currentElement.value === "none") {
       hideElement(slider);
     } else {
       showElement(slider);
+    }
+
+    const addEffectDataToImage = (currentElement) => {
+      const effect = Effects[currentElement.value.toUpperCase()];
+      uploadedImge.style.filter = `${effect.cssProperty}
+                                  (${effect.maxValue}
+                                  ${effect.unit})`;
+      uploadedImge.classList.add(effect.className);
+    }
+
+    const setSliderValue = (value) => {
+      pin.style.left = `${value}%`;
+      depth.style.width = `${value}%`;
+      effectValue.setAttribute("value", value);
     }
 
     deleteOldEffectDataFromImage();
@@ -417,6 +416,7 @@ const initFileUpload = () => {
     cleanUploadInput();
     hideElement(overlay);
     removeEditFormListeners();
+    deleteOldEffectDataFromImage();
   }
   
   const handleImageEditorCloseKeyDown = (downEvt) => {
@@ -425,6 +425,7 @@ const initFileUpload = () => {
       cleanUploadInput();
       hideElement(overlay);
       removeEditFormListeners();
+      deleteOldEffectDataFromImage();
     });
   }
 }
