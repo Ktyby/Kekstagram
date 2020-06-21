@@ -13,6 +13,8 @@ const MIN_INDEX_DESCRIPTION = 0;
 const MAX_SHOWN_COMMENTS_COUNT = 5;
 const MAX_SHOWN_MINIATURS_COUNT = 25;
 const MAX_SLIDER_VALUE = "100";
+const ENTER = "Enter";
+const ESCAPE = "Escape";
 
 // Данные //
 
@@ -154,6 +156,18 @@ const getRandomElementFromArray = (array, minValue = 0, maxValue = array.length 
 	return array[getRandomIntegerFromRange(minValue, maxValue)];
 }
 
+const isEnterEvent = (evt, callback) => {
+  if (evt.code === ENTER) {
+    callback(evt);
+  }
+}
+
+const isEscapeEvent = (evt, callback) => {
+  if (evt.code === ESCAPE) {
+    callback(evt);
+  }
+}
+
 // Функции работы с миниатюрами //
 
 const generatePicturesData = () => {
@@ -167,7 +181,7 @@ const generatePicturesData = () => {
       	avatar: getRandomElementFromArray(AVATARS, MIN_INDEX_AVATAR),
       	message: getRandomElementFromArray(MESSAGES, MIN_INDEX_MESSAGE),
         name: getRandomElementFromArray(USER_NAMES, MIN_INDEX_NAME)
-      })
+      });
     }
 
     return commentsData;
@@ -179,7 +193,7 @@ const generatePicturesData = () => {
       likes: getRandomIntegerFromRange(MIN_NUMBER_LIKES, MAX_NUMBER_LIKES),
       image: PHOTOS_URLS[index],
       description: getRandomElementFromArray(DESCRIPTIONS, MIN_INDEX_DESCRIPTION)
-    })
+    });
   }
 }
 
@@ -227,10 +241,11 @@ const handlePictureClick = (evt) => {
   renderBigPicture(getPictureAttribute(evt));
 }
 
-const handlePictureKeyDown = (evt) => {
-  if (evt.code === "Enter") {
+const handlePictureKeyDown = (downEvt) => {
+  isEnterEvent(downEvt, (evt) => {
+    evt.preventDefault();
     renderBigPicture(getPictureAttribute(evt));
-  }
+  });
 }
 
 // Функциии работы с большими изображениями //
@@ -342,11 +357,11 @@ const initFileUpload = () => {
   uploadInput.addEventListener("change", handleFileUploadChange);
 
   const addEffectDataToImage = (currentElement) => {
-    const effectName = Effects[currentElement.value.toUpperCase()]
-    uploadedImge.style.filter = `${effectName.cssProperty}
-                                (${effectName.maxValue}
-                                ${effectName.unit})`;
-    uploadedImge.classList.add(effectName.className);
+    const effect = Effects[currentElement.value.toUpperCase()];
+    uploadedImge.style.filter = `${effect.cssProperty}
+                                (${effect.maxValue}
+                                ${effect.unit})`;
+    uploadedImge.classList.add(effect.className);
   }
 
   const deleteOldEffectDataFromImage = () => {
@@ -355,8 +370,8 @@ const initFileUpload = () => {
   }
 
   const setSliderValue = (value) => {
-    pin.style.left = value + "%";
-    depth.style.width = value + "%";
+    pin.style.left = `${value}%`;
+    depth.style.width = `${value}%`;
     effectValue.setAttribute("value", value);
   }
 
@@ -404,16 +419,17 @@ const initFileUpload = () => {
     removeEditFormListeners();
   }
   
-  const handleImageEditorCloseKeyDown = (evt) => {
-    if (evt.code === "Escape") {
+  const handleImageEditorCloseKeyDown = (downEvt) => {
+    isEscapeEvent(downEvt, (evt) => {
+      evt.preventDefault();
       cleanUploadInput();
       hideElement(overlay);
       removeEditFormListeners();
-    }
+    });
   }
 }
 
-// Вызов основных функций//
+// Вызов основных функций //
 
 generatePicturesData();
 renderAllPictures();
