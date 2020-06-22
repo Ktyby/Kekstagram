@@ -87,7 +87,7 @@ const AVATARS = [
   "img/avatar-6.svg",
 ];
 
-const Effects = {
+const Effect = {
   NONE: {
     className: "effects__preview--none",
     cssProperty: "none",
@@ -152,10 +152,6 @@ const getRandomIntegerFromRange = (minValue, maxValue) => {
   return Math.floor(Math.random() * (maxValue - minValue)) + minValue;
 }
 
-const getRandomElementFromArray = (array, minValue = 0, maxValue = array.length - 1) => {
-	return array[getRandomIntegerFromRange(minValue, maxValue)];
-}
-
 const isEnterEvent = (evt, callback) => {
   if (evt.code === ENTER) {
     callback(evt);
@@ -178,9 +174,9 @@ const generatePicturesData = () => {
 
     for (let index = 0; index < randomQuantityComments; index++) {
       commentsData.push({
-      	avatar: getRandomElementFromArray(AVATARS, MIN_INDEX_AVATAR),
-      	message: getRandomElementFromArray(MESSAGES, MIN_INDEX_MESSAGE),
-        name: getRandomElementFromArray(USER_NAMES, MIN_INDEX_NAME)
+      	avatar: AVATARS[getRandomIntegerFromRange(MIN_INDEX_AVATAR, AVATARS.length - 1)],
+      	message: MESSAGES[getRandomIntegerFromRange(MIN_INDEX_MESSAGE, MESSAGES.length - 1)],
+        name: USER_NAMES[getRandomIntegerFromRange(MIN_INDEX_NAME, USER_NAMES.length - 1)]
       });
     }
 
@@ -192,19 +188,17 @@ const generatePicturesData = () => {
       comments: generateCommentsData(),
       likes: getRandomIntegerFromRange(MIN_NUMBER_LIKES, MAX_NUMBER_LIKES),
       image: PHOTOS_URLS[index],
-      description: getRandomElementFromArray(DESCRIPTIONS, MIN_INDEX_DESCRIPTION)
+      description: DESCRIPTIONS[getRandomIntegerFromRange(MIN_INDEX_DESCRIPTION, DESCRIPTIONS.length - 1)]
     });
   }
 }
 
 const renderAllPictures = () => {
   const picturesContainer = document.querySelector(".pictures");
-  const picturesFragment = document.createDocumentFragment();
-  const miniaturs = picturesContainer.querySelectorAll(".picture");
+  const fragment = document.createDocumentFragment();
+  const pictureTemplate = document.querySelector("#picture").content.querySelector(".picture");
 
   const createPicture = (picture, index) => {
-    const pictureTemplate = document.querySelector("#picture").content.querySelector(".picture");
-  
     const image = pictureTemplate.cloneNode(true);
   
     image.querySelector(".picture__comments").textContent = picture.comments.length;
@@ -214,23 +208,19 @@ const renderAllPictures = () => {
   
     return image;
   }
-
+  
   picturesData.forEach((picture, index) => {
-    picturesFragment.append(createPicture(picture, index));
+    fragment.append(createPicture(picture, index));
   });
 
-  picturesContainer.append(picturesFragment);
+  picturesContainer.append(fragment);
+    
+  const miniaturs = document.querySelectorAll(".picture");
 
-  const setPicturesListeners = () => {
-    const miniaturs = picturesContainer.querySelectorAll(".picture");
-
-    miniaturs.forEach((picture) => {
-      picture.addEventListener("click", handlePictureClick);
-      picture.addEventListener("keydown", handlePictureKeyDown);
-    });
-  }
-
-  setPicturesListeners();
+  miniaturs.forEach((picture) => {
+    picture.addEventListener("click", handlePictureClick);
+    picture.addEventListener("keydown", handlePictureKeyDown);
+  });
 }
 
 const getPictureAttribute = (evt) => {
@@ -315,22 +305,11 @@ const renderBigPicture = (pictureID) => {
     document.querySelector(".social__comment-count").classList.add("visually-hidden");
     document.querySelector(".comments-loader").classList.add("visually-hidden");
   }
-
-  const removePicturesListeners = () => {
-    const miniaturs = document.querySelectorAll(".picture__img");
-  
-    miniaturs.forEach((picture) => {
-      picture.removeEventListener("click", handlePictureClick);
-      picture.removeEventListener("keydown", handlePictureKeyDown);
-    });
-  }
 	
 	renderCommentsForBigPicture(pictureID);
 	assignDataForBigPicture();
   showElement(bigPicture);
   hideCommentsCounter();
-
-  removePicturesListeners();
 }
 
 // Функции для работы с редактором //
@@ -368,7 +347,7 @@ const initFileUpload = () => {
     }
 
     const addEffectDataToImage = (currentElement) => {
-      const effect = Effects[currentElement.value.toUpperCase()];
+      const effect = Effect[currentElement.value.toUpperCase()];
       uploadedImge.style.filter = `${effect.cssProperty}
                                   (${effect.maxValue}
                                   ${effect.unit})`;
@@ -399,21 +378,18 @@ const initFileUpload = () => {
     });
   }
 
+  const removeEditFormListeners = () => {
+    editorCloseButton.removeEventListener("click", handleImageEditorCloseClick);
+    document.removeEventListener("keydown", handleImageEditorCloseKeyDown);
+
+    effectsRadio.forEach((effect) => {
+      effect.removeEventListener("focus", handleEffectFocus);
+    });
+  }
+
   const closeEditForm = () => {
-    const cleanUploadInput = () => {
-      uploadInput.value = "";
-    }
-
-    const removeEditFormListeners = () => {
-      editorCloseButton.removeEventListener("click", handleImageEditorCloseClick);
-      document.removeEventListener("keydown", handleImageEditorCloseKeyDown);
-  
-      effectsRadio.forEach((effect) => {
-        effect.removeEventListener("focus", handleEffectFocus);
-      });
-    }
-
-    cleanUploadInput();
+    uploadInput.value = "";
+    
     hideElement(overlay);
     removeEditFormListeners();
     deleteOldEffectDataFromImage();
