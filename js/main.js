@@ -15,6 +15,8 @@ const MAX_SHOWN_MINIATURS_COUNT = 25;
 const MAX_SLIDER_VALUE = "100";
 const ENTER = "Enter";
 const ESCAPE = "Escape";
+const MAX_HASHTAGS_NUMBER = 5;
+const MAX_HASHTAG_LENGTH = 20;
 
 // Данные //
 
@@ -130,6 +132,15 @@ const Effect = {
     minValue: 1,
     unit: ""
   }
+}
+
+const ErrorsHashtag = {
+  Sharp: "хэш-тег должен начинаться символа # (решётка)",
+  NotOnlySharp: "хеш-тег не может состоять только из одной решётки",
+  Separator: "хэш-теги должны разделяться пробелами",
+  RepeatHashtag: "один и тот же хэш-тег не может быть использован дважды",
+  NumberHashtag: `нельзя указать больше ${MAX_HASHTAGS_NUMBER} хэш-тегов`,
+  LongHashtag: `максимальная длина одного хэш-тега ${MAX_HASHTAG_LENGTH} символов, включая решётку`,
 }
 
 const picturesData = [];
@@ -407,8 +418,50 @@ const initFileUpload = () => {
   }
 }
 
+const validationHashtags = () => {
+  const hashtagsInput = document.querySelector(".text__hashtags");
+
+  const limitOnNumberHashtags = (hashtags) => {
+    if (hashtags.length > MAX_HASHTAGS_NUMBER) {
+      hashtagsInput.setCustomValidity(ErrorsHashtag.NumberHashtag);
+    }
+  }
+
+  const getErrorForAbcenseSharp = (hashtag) => {
+    if (hashtag[0] !== "#") {
+      hashtagsInput.setCustomValidity(ErrorsHashtag.Sharp);
+    }
+  }
+  
+  const getErrorSingleSharp = (hashtag) => {
+    if ((hashtag[0] === "#") && (hashtag.length === 1)) {
+      hashtagsInput.setCustomValidity(ErrorsHashtag.NotOnlySharp);
+    }
+  }
+
+  const getOneHashtag = (hashtags) => {
+    hashtags.forEach(element => {
+      const hashtag = element.toLowerCase().split("");
+      getErrorForAbcenseSharp(hashtag);
+      getErrorSingleSharp(hashtag);
+    });
+  }
+
+  const handleHeshtagChange = (evt) => {
+    const inputText = evt.target.value.split(" ");
+    const hashtags = inputText.filter(element => element !== "");
+
+    hashtagsInput.setCustomValidity("");
+    limitOnNumberHashtags(hashtags);
+    getOneHashtag(hashtags);
+  }
+
+  hashtagsInput.addEventListener("input", handleHeshtagChange);
+}
+
 // Вызов основных функций //
 
 generatePicturesData();
 renderAllPictures();
 initFileUpload();
+validationHashtags();
