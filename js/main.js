@@ -140,7 +140,7 @@ const ErrorsHashtag = {
   Separator: "хэш-теги должны разделяться пробелами",
   RepeatHashtag: "один и тот же хэш-тег не может быть использован дважды",
   NumberHashtag: `нельзя указать больше ${MAX_HASHTAGS_NUMBER} хэш-тегов`,
-  LongHashtag: `максимальная длина одного хэш-тега ${MAX_HASHTAG_LENGTH} символов, включая решётку`,
+  LongHashtag: `максимальная длина одного хэш-тега ${MAX_HASHTAG_LENGTH} символов, включая решётку`
 }
 
 const picturesData = [];
@@ -389,6 +389,72 @@ const initFileUpload = () => {
     });
   }
 
+  const validationHashtags = () => {
+    const hashtagsInput = document.querySelector(".text__hashtags");
+  
+    const limitOnNumberHashtags = (hashtags) => {
+      if (hashtags.length > MAX_HASHTAGS_NUMBER) {
+        hashtagsInput.setCustomValidity(ErrorsHashtag.NumberHashtag);
+      }
+    }
+
+    const getErrorAboutRepeatHashtag = (hashtags) => {
+      hashtags.filter( (element, index, hashtags) => {
+        if ((index !== hashtags.indexOf(element)) || (index !== hashtags.lastIndexOf(element))) {
+          hashtagsInput.setCustomValidity(ErrorsHashtag.RepeatHashtag);
+        }
+      });
+    }
+  
+    const getErrorForAbcenseSharp = (hashtag) => {
+      if (hashtag[0] !== "#") {
+        hashtagsInput.setCustomValidity(ErrorsHashtag.Sharp);
+      }
+    }
+    
+    const getErrorSingleSharp = (hashtag) => {
+      if ((hashtag[0] === "#") && (hashtag.length === 1)) {
+        hashtagsInput.setCustomValidity(ErrorsHashtag.NotOnlySharp);
+      }
+    }
+
+    const getErrorAboutlengthHashtag = (hashtag) => {
+      if (hashtag.length > MAX_HASHTAG_LENGTH) {
+        hashtagsInput.setCustomValidity(ErrorsHashtag.LongHashtag);
+      }
+    }
+
+    const getErrorAboutSeparatorHashtag = (hashtag) => {
+      if ((hashtag.indexOf("#")) !== hashtag.lastIndexOf("#")) {
+        hashtagsInput.setCustomValidity(ErrorsHashtag.Separator);
+      }
+    }
+  
+    const getErrorWithOneHashtag = (hashtags) => {
+      hashtags.forEach(element => {
+        const hashtag = element.split("");
+
+        getErrorForAbcenseSharp(hashtag);
+        getErrorSingleSharp(hashtag);
+        getErrorAboutlengthHashtag(hashtag);
+        getErrorAboutSeparatorHashtag(hashtag);
+      });
+    }
+  
+    const handleHeshtagChange = (evt) => {
+      const inputText = evt.target.value.toLowerCase().split(" ");
+      const hashtags = inputText.filter(element => element !== "");
+      
+      hashtagsInput.setCustomValidity("");
+
+      limitOnNumberHashtags(hashtags);
+      getErrorAboutRepeatHashtag(hashtags);
+      getErrorWithOneHashtag(hashtags);
+    }
+  
+    hashtagsInput.addEventListener("input", handleHeshtagChange);
+  }
+
   const removeEditFormListeners = () => {
     editorCloseButton.removeEventListener("click", handleImageEditorCloseClick);
     document.removeEventListener("keydown", handleImageEditorCloseKeyDown);
@@ -416,47 +482,8 @@ const initFileUpload = () => {
       closeEditForm();
     });
   }
-}
 
-const validationHashtags = () => {
-  const hashtagsInput = document.querySelector(".text__hashtags");
-
-  const limitOnNumberHashtags = (hashtags) => {
-    if (hashtags.length > MAX_HASHTAGS_NUMBER) {
-      hashtagsInput.setCustomValidity(ErrorsHashtag.NumberHashtag);
-    }
-  }
-
-  const getErrorForAbcenseSharp = (hashtag) => {
-    if (hashtag[0] !== "#") {
-      hashtagsInput.setCustomValidity(ErrorsHashtag.Sharp);
-    }
-  }
-  
-  const getErrorSingleSharp = (hashtag) => {
-    if ((hashtag[0] === "#") && (hashtag.length === 1)) {
-      hashtagsInput.setCustomValidity(ErrorsHashtag.NotOnlySharp);
-    }
-  }
-
-  const getOneHashtag = (hashtags) => {
-    hashtags.forEach(element => {
-      const hashtag = element.toLowerCase().split("");
-      getErrorForAbcenseSharp(hashtag);
-      getErrorSingleSharp(hashtag);
-    });
-  }
-
-  const handleHeshtagChange = (evt) => {
-    const inputText = evt.target.value.split(" ");
-    const hashtags = inputText.filter(element => element !== "");
-
-    hashtagsInput.setCustomValidity("");
-    limitOnNumberHashtags(hashtags);
-    getOneHashtag(hashtags);
-  }
-
-  hashtagsInput.addEventListener("input", handleHeshtagChange);
+  validationHashtags();
 }
 
 // Вызов основных функций //
@@ -464,4 +491,3 @@ const validationHashtags = () => {
 generatePicturesData();
 renderAllPictures();
 initFileUpload();
-validationHashtags();
