@@ -335,6 +335,8 @@ const initFileUpload = () => {
   const pin = slider.querySelector(".effect-level__pin");
   const depth = slider.querySelector(".effect-level__depth");
   const effectValue = slider.querySelector(".effect-level__value");
+  const hashtagsInput = document.querySelector(".text__hashtags");
+  const descriptionInput = document.querySelector(".text__description");
 
   
   const handleFileUploadChange = () => {
@@ -389,9 +391,7 @@ const initFileUpload = () => {
     });
   }
 
-  const validationHashtags = () => {
-    const hashtagsInput = document.querySelector(".text__hashtags");
-  
+  const checkingValidityOfForm = () => {
     const limitOnNumberHashtags = (hashtags) => {
       if (hashtags.length > MAX_HASHTAGS_NUMBER) {
         hashtagsInput.setCustomValidity(ErrorsHashtag.NumberHashtag);
@@ -433,7 +433,6 @@ const initFileUpload = () => {
     const getErrorWithOneHashtag = (hashtags) => {
       hashtags.forEach(element => {
         const hashtag = element.split("");
-
         getErrorForAbcenseSharp(hashtag);
         getErrorSingleSharp(hashtag);
         getErrorAboutlengthHashtag(hashtag);
@@ -446,12 +445,11 @@ const initFileUpload = () => {
       const hashtags = inputText.filter(element => element !== "");
       
       hashtagsInput.setCustomValidity("");
-
       limitOnNumberHashtags(hashtags);
       getErrorAboutRepeatHashtag(hashtags);
       getErrorWithOneHashtag(hashtags);
     }
-  
+
     hashtagsInput.addEventListener("input", handleHeshtagChange);
   }
 
@@ -478,12 +476,14 @@ const initFileUpload = () => {
   
   const handleImageEditorCloseKeyDown = (downEvt) => {
     isEscapeEvent(downEvt, (evt) => {
-      evt.preventDefault();
-      closeEditForm();
+      if (descriptionInput !== document.activeElement && hashtagsInput !== document.activeElement) {
+        evt.preventDefault();
+        closeEditForm();
+      }
     });
   }
 
-  validationHashtags();
+  checkingValidityOfForm();
 }
 
 // Вызов основных функций //
