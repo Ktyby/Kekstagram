@@ -134,15 +134,6 @@ const Effect = {
   }
 }
 
-const ErrorsHashtag = {
-  Sharp: "хэш-тег должен начинаться символа # (решётка)",
-  NotOnlySharp: "хеш-тег не может состоять только из одной решётки",
-  Separator: "хэш-теги должны разделяться пробелами",
-  RepeatHashtag: "один и тот же хэш-тег не может быть использован дважды",
-  NumberHashtag: `нельзя указать больше ${MAX_HASHTAGS_NUMBER} хэш-тегов`,
-  LongHashtag: `максимальная длина одного хэш-тега ${MAX_HASHTAG_LENGTH} символов, включая решётку`
-}
-
 const picturesData = [];
 
 // Общие функции //
@@ -335,9 +326,8 @@ const initFileUpload = () => {
   const pin = slider.querySelector(".effect-level__pin");
   const depth = slider.querySelector(".effect-level__depth");
   const effectValue = slider.querySelector(".effect-level__value");
-  const hashtagsInput = document.querySelector(".text__hashtags");
-  const descriptionInput = document.querySelector(".text__description");
-
+  const hashtagsInput = overlay.querySelector(".text__hashtags");
+  const descriptionInput = overlay.querySelector(".text__description");
   
   const handleFileUploadChange = () => {
     showElement(overlay);
@@ -385,72 +375,70 @@ const initFileUpload = () => {
   const setEditFormListeners = () => {
     editorCloseButton.addEventListener("click", handleImageEditorCloseClick);
     document.addEventListener("keydown", handleImageEditorCloseKeyDown);
+    hashtagsInput.addEventListener("input", handleHeshtagInput);
 
     effectsRadio.forEach((effect) => {
       effect.addEventListener("focus", handleEffectFocus);
     });
   }
 
-  const checkingValidityOfForm = () => {
-    const limitOnNumberHashtags = (hashtags) => {
-      if (hashtags.length > MAX_HASHTAGS_NUMBER) {
-        hashtagsInput.setCustomValidity(ErrorsHashtag.NumberHashtag);
-      }
-    }
+  const handleHeshtagInput = (evt) => {    
+    hashtagsInput.setCustomValidity("");
+    hashtagsInput.setCustomValidity(checkingValidityForm(evt));
+  }
 
-    const getErrorAboutRepeatHashtag = (hashtags) => {
-      hashtags.filter( (element, index, hashtags) => {
-        if ((index !== hashtags.indexOf(element)) || (index !== hashtags.lastIndexOf(element))) {
-          hashtagsInput.setCustomValidity(ErrorsHashtag.RepeatHashtag);
-        }
-      });
-    }
-  
-    const getErrorForAbcenseSharp = (hashtag) => {
-      if (hashtag[0] !== "#") {
-        hashtagsInput.setCustomValidity(ErrorsHashtag.Sharp);
-      }
+  const checkingValidityForm = (evt) => {
+    const errors = {
+      noHash: false,
+      oneSymbol: false,
+      separator: false,
+      longHashTag: false,
+      sameHashTag: false,
+      overageHashTags: false
+    };
+
+    const errorToMessage = {
+      noHash: "хэш-тег должен начинаться символа # (решётка)",
+      oneSymbol: "хеш-тег не может состоять только из одной решётки (#)",
+      separator: "Хэш-теги должны разделяться пробелами",
+      longHashtag: `максимальная длина одного хэш-тега ${MAX_HASHTAG_LENGTH} символов, включая решётку`,
+      repeatHashtag: "Хэш-теги не могут повторяться",
+      overageHashtags: `нельзя указать больше ${MAX_HASHTAGS_NUMBER} хэш-тегов`
+    };
+
+    let message = "";
+
+    const getHashtagsArray = (evt) => {
+      const hashtags = evt.target.value.toLowerCase().split(" ").filter(element => element !== "");
+      return hashtags;
     }
     
-    const getErrorSingleSharp = (hashtag) => {
-      if ((hashtag[0] === "#") && (hashtag.length === 1)) {
-        hashtagsInput.setCustomValidity(ErrorsHashtag.NotOnlySharp);
-      }
-    }
+    getHashtagsArray(evt).forEach((hashtag) => {
+      errors.noHash = errors.noHash || (hashtag[0] !== "#");
+      errors.oneSymbol = errors.oneSymbol || ((hashtag[0] === "#") && (hashtag.length === 1));
+      errors.separator = errors.separator || (hashtag.includes("#", 1));
+      errors.longHashtag = errors.longHashtag || (hashtag.length > MAX_HASHTAG_LENGTH);
+    });
 
-    const getErrorAboutlengthHashtag = (hashtag) => {
-      if (hashtag.length > MAX_HASHTAG_LENGTH) {
-        hashtagsInput.setCustomValidity(ErrorsHashtag.LongHashtag);
-      }
-    }
+    errors.overageHashtags = errors.overageHashtags || (getHashtagsArray(evt).length > MAX_HASHTAGS_NUMBER);
 
-    const getErrorAboutSeparatorHashtag = (hashtag) => {
-      if ((hashtag.indexOf("#")) !== hashtag.lastIndexOf("#")) {
-        hashtagsInput.setCustomValidity(ErrorsHashtag.Separator);
-      }
-    }
-  
-    const getErrorWithOneHashtag = (hashtags) => {
-      hashtags.forEach(element => {
-        const hashtag = element.split("");
-        getErrorForAbcenseSharp(hashtag);
-        getErrorSingleSharp(hashtag);
-        getErrorAboutlengthHashtag(hashtag);
-        getErrorAboutSeparatorHashtag(hashtag);
+    const getHashtagRepeatError = (hashtags) => {
+      const hashtagsArray = hashtags.filter((element, index) => {
+        return (index !== hashtags.indexOf(element)) || (index !== hashtags.lastIndexOf(element));
       });
-    }
-  
-    const handleHeshtagChange = (evt) => {
-      const inputText = evt.target.value.toLowerCase().split(" ");
-      const hashtags = inputText.filter(element => element !== "");
-      
-      hashtagsInput.setCustomValidity("");
-      limitOnNumberHashtags(hashtags);
-      getErrorAboutRepeatHashtag(hashtags);
-      getErrorWithOneHashtag(hashtags);
+
+      return hashtagsArray;
     }
 
-    hashtagsInput.addEventListener("input", handleHeshtagChange);
+    errors.repeatHashtag = errors.repeatHashtag || (getHashtagRepeatError(getHashtagsArray(evt)).length > 0);
+
+    for (const element in errors) {
+      if (errors[element]) {
+        message += `${errorToMessage[element]}\n`;
+      }
+    }
+
+    return message;
   }
 
   const removeEditFormListeners = () => {
@@ -462,9 +450,14 @@ const initFileUpload = () => {
     });
   }
 
-  const closeEditForm = () => {
+  const clearInput = () => {
     uploadInput.value = "";
-    
+    descriptionInput.value = "";
+    hashtagsInput.value = "";
+  }
+
+  const closeEditForm = () => {
+    clearInput();
     hideElement(overlay);
     removeEditFormListeners();
     deleteOldEffectDataFromImage();
@@ -482,8 +475,6 @@ const initFileUpload = () => {
       }
     });
   }
-
-  checkingValidityOfForm();
 }
 
 // Вызов основных функций //
