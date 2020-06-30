@@ -384,10 +384,10 @@ const initFileUpload = () => {
 
   const handleHeshtagInput = (evt) => {    
     hashtagsInput.setCustomValidity("");
-    hashtagsInput.setCustomValidity(checkingValidityForm(evt));
+    hashtagsInput.setCustomValidity(getFormValidationErrors(evt));
   }
 
-  const checkingValidityForm = (evt) => {
+  const getFormValidationErrors = (evt) => {
     const errors = {
       noHash: false,
       oneSymbol: false,
@@ -412,15 +412,17 @@ const initFileUpload = () => {
       const hashtags = evt.target.value.toLowerCase().split(" ").filter(element => element !== "");
       return hashtags;
     }
+
+    const hashtags = getHashtagsArray(evt);
     
-    getHashtagsArray(evt).forEach((hashtag) => {
+    hashtags.forEach((hashtag) => {
       errors.noHash = errors.noHash || (hashtag[0] !== "#");
-      errors.oneSymbol = errors.oneSymbol || ((hashtag[0] === "#") && (hashtag.length === 1));
+      errors.oneSymbol = errors.oneSymbol || (hashtag === "#");
       errors.separator = errors.separator || (hashtag.includes("#", 1));
       errors.longHashtag = errors.longHashtag || (hashtag.length > MAX_HASHTAG_LENGTH);
     });
 
-    errors.overageHashtags = errors.overageHashtags || (getHashtagsArray(evt).length > MAX_HASHTAGS_NUMBER);
+    errors.overageHashtags = errors.overageHashtags || (hashtags.length > MAX_HASHTAGS_NUMBER);
 
     const getHashtagRepeatError = (hashtags) => {
       const hashtagsArray = hashtags.filter((element, index) => {
@@ -430,11 +432,11 @@ const initFileUpload = () => {
       return hashtagsArray;
     }
 
-    errors.repeatHashtag = errors.repeatHashtag || (getHashtagRepeatError(getHashtagsArray(evt)).length > 0);
+    errors.repeatHashtag = errors.repeatHashtag || (getHashtagRepeatError(hashtags).length > 0);
 
     for (const element in errors) {
       if (errors[element]) {
-        message += `${errorToMessage[element]}\n`;
+        message += `${errorToMessage[element]}\n || `;
       }
     }
 
@@ -444,6 +446,7 @@ const initFileUpload = () => {
   const removeEditFormListeners = () => {
     editorCloseButton.removeEventListener("click", handleImageEditorCloseClick);
     document.removeEventListener("keydown", handleImageEditorCloseKeyDown);
+    hashtagsInput.removeEventListener("input", handleHeshtagInput);
 
     effectsRadio.forEach((effect) => {
       effect.removeEventListener("focus", handleEffectFocus);
