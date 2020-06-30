@@ -17,6 +17,7 @@ const ENTER = "Enter";
 const ESCAPE = "Escape";
 const MAX_HASHTAGS_NUMBER = 5;
 const MAX_HASHTAG_LENGTH = 20;
+const SEPARATOR = "||";
 
 // Данные //
 
@@ -398,12 +399,12 @@ const initFileUpload = () => {
     };
 
     const errorToMessage = {
-      noHash: "хэш-тег должен начинаться символа # (решётка)",
-      oneSymbol: "хеш-тег не может состоять только из одной решётки (#)",
+      noHash: "Хэш-тег должен начинаться символа # (решётка)",
+      oneSymbol: "Хэш-тег не может состоять только из одной решётки (#)",
       separator: "Хэш-теги должны разделяться пробелами",
-      longHashtag: `максимальная длина одного хэш-тега ${MAX_HASHTAG_LENGTH} символов, включая решётку`,
+      longHashtag: `Максимальная длина одного хэш-тега ${MAX_HASHTAG_LENGTH} символов, включая решётку`,
       repeatHashtag: "Хэш-теги не могут повторяться",
-      overageHashtags: `нельзя указать больше ${MAX_HASHTAGS_NUMBER} хэш-тегов`
+      overageHashtags: `Нельзя указать больше ${MAX_HASHTAGS_NUMBER} хэш-тегов`
     };
 
     let message = "";
@@ -436,7 +437,7 @@ const initFileUpload = () => {
 
     for (const element in errors) {
       if (errors[element]) {
-        message += `${errorToMessage[element]}\n || `;
+        message += `${errorToMessage[element]} ${SEPARATOR} `;
       }
     }
 
