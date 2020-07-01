@@ -329,7 +329,8 @@ const initFileUpload = () => {
   const effectValue = slider.querySelector(".effect-level__value");
   const hashtagsInput = overlay.querySelector(".text__hashtags");
   const descriptionInput = overlay.querySelector(".text__description");
-  
+  const submitButton = overlay.querySelector(".img-upload__submit");
+
   const handleFileUploadChange = () => {
     showElement(overlay);
     hideElement(slider); 
@@ -376,16 +377,21 @@ const initFileUpload = () => {
   const setEditFormListeners = () => {
     editorCloseButton.addEventListener("click", handleImageEditorCloseClick);
     document.addEventListener("keydown", handleImageEditorCloseKeyDown);
-    hashtagsInput.addEventListener("input", handleHeshtagInput);
+    hashtagsInput.addEventListener("input", handleHashtagInput);
+    submitButton.addEventListener("submit", handleButtonSubmit);
 
     effectsRadio.forEach((effect) => {
       effect.addEventListener("focus", handleEffectFocus);
     });
   }
 
-  const handleHeshtagInput = (evt) => {    
+  const handleHashtagInput = (evt) => {    
     hashtagsInput.setCustomValidity("");
     hashtagsInput.setCustomValidity(getFormValidationErrors(evt));
+  }
+
+  const handleButtonSubmit = (evt) => {
+    evt.preventDefault();
   }
 
   const getFormValidationErrors = (evt) => {
@@ -394,7 +400,7 @@ const initFileUpload = () => {
       oneSymbol: false,
       separator: false,
       longHashTag: false,
-      sameHashTag: false,
+      repeatHashtag: false,
       overageHashTags: false
     };
 
@@ -410,7 +416,7 @@ const initFileUpload = () => {
     let message = "";
 
     const getHashtagsArray = (evt) => {
-      const hashtags = evt.target.value.toLowerCase().split(" ").filter(element => element !== "");
+      const hashtags = evt.target.value.toLowerCase().split(" ").filter(element => !!element);
       return hashtags;
     }
 
@@ -447,7 +453,8 @@ const initFileUpload = () => {
   const removeEditFormListeners = () => {
     editorCloseButton.removeEventListener("click", handleImageEditorCloseClick);
     document.removeEventListener("keydown", handleImageEditorCloseKeyDown);
-    hashtagsInput.removeEventListener("input", handleHeshtagInput);
+    hashtagsInput.removeEventListener("input", handleHashtagInput);
+    submitButton.removeEventListener("submit", handleButtonSubmit);
 
     effectsRadio.forEach((effect) => {
       effect.removeEventListener("focus", handleEffectFocus);
