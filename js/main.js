@@ -318,9 +318,10 @@ const renderBigPicture = (pictureID) => {
 // Функции для работы с редактором //
 
 const initFileUpload = () => {
-  const overlay = document.querySelector(".img-upload__overlay");
-  const uploadInput = document.querySelector(".img-upload__input");
-  const uploadedImge = overlay.querySelector(".img-upload__preview img");
+  const form = document.querySelector(".img-upload__form");
+  const uploadInput = form.querySelector(".img-upload__input");
+  const overlay = form.querySelector(".img-upload__overlay");
+  const uploadedImage = overlay.querySelector(".img-upload__preview img");
   const editorCloseButton = overlay.querySelector(".img-upload__cancel");
   const effectsRadio = overlay.querySelectorAll(".effects__radio");
   const slider = overlay.querySelector(".img-upload__effect-level");
@@ -329,7 +330,6 @@ const initFileUpload = () => {
   const effectValue = slider.querySelector(".effect-level__value");
   const hashtagsInput = overlay.querySelector(".text__hashtags");
   const descriptionInput = overlay.querySelector(".text__description");
-  const submitButton = overlay.querySelector(".img-upload__submit");
 
   const handleFileUploadChange = () => {
     showElement(overlay);
@@ -338,8 +338,8 @@ const initFileUpload = () => {
   }
 
   const deleteOldEffectDataFromImage = () => {
-    uploadedImge.style.filter = "";
-    uploadedImge.className = "";
+    uploadedImage.style.filter = "";
+    uploadedImage.className = "";
   }
 
   uploadInput.addEventListener("change", handleFileUploadChange);
@@ -353,10 +353,10 @@ const initFileUpload = () => {
 
     const addEffectDataToImage = (currentElement) => {
       const effect = Effect[currentElement.value.toUpperCase()];
-      uploadedImge.style.filter = `${effect.cssProperty}
+      uploadedImage.style.filter = `${effect.cssProperty}
                                   (${effect.maxValue}
                                   ${effect.unit})`;
-      uploadedImge.classList.add(effect.className);
+      uploadedImage.classList.add(effect.className);
     }
 
     const setSliderValue = (value) => {
@@ -378,7 +378,7 @@ const initFileUpload = () => {
     editorCloseButton.addEventListener("click", handleImageEditorCloseClick);
     document.addEventListener("keydown", handleImageEditorCloseKeyDown);
     hashtagsInput.addEventListener("input", handleHashtagInput);
-    submitButton.addEventListener("submit", handleButtonSubmit);
+    form.addEventListener("submit", handleFormSubmit);
 
     effectsRadio.forEach((effect) => {
       effect.addEventListener("focus", handleEffectFocus);
@@ -390,11 +390,11 @@ const initFileUpload = () => {
     hashtagsInput.setCustomValidity(getFormValidationErrors(evt));
   }
 
-  const handleButtonSubmit = (evt) => {
+  const handleFormSubmit = (evt) => {
     evt.preventDefault();
   }
 
-  const getFormValidationErrors = (evt) => {
+  const getFormValidationErrors = (evt) => { // Валидация
     const errors = {
       noHash: false,
       oneSymbol: false,
@@ -454,7 +454,7 @@ const initFileUpload = () => {
     editorCloseButton.removeEventListener("click", handleImageEditorCloseClick);
     document.removeEventListener("keydown", handleImageEditorCloseKeyDown);
     hashtagsInput.removeEventListener("input", handleHashtagInput);
-    submitButton.removeEventListener("submit", handleButtonSubmit);
+    form.removeEventListener("submit", handleFormSubmit);
 
     effectsRadio.forEach((effect) => {
       effect.removeEventListener("focus", handleEffectFocus);
