@@ -12,12 +12,14 @@ const MIN_INDEX_NAME = 0;
 const MIN_INDEX_DESCRIPTION = 0;
 const MAX_SHOWN_COMMENTS_COUNT = 5;
 const MAX_SHOWN_MINIATURS_COUNT = 25;
-const MAX_SLIDER_VALUE = "100";
+const MIN_SLIDER_VALUE = 0;
+const MAX_SLIDER_VALUE = 100;
 const ENTER = "Enter";
 const ESCAPE = "Escape";
 const MAX_HASHTAGS_NUMBER = 5;
 const MAX_HASHTAG_LENGTH = 20;
 const SEPARATOR = "||";
+const LINE_SATURATION_LENGTH = 453;
 
 // Данные //
 
@@ -122,8 +124,8 @@ const Effect = {
   PHOBOS: {
     className: "effects__preview--phobos",
     cssProperty: "blur",
-    maxValue: "3",
-    minValue: "0",
+    maxValue: 3,
+    minValue: 0,
     unit: "px"
   },
   HEAT: {
@@ -344,26 +346,30 @@ const initFileUpload = () => {
 
   uploadInput.addEventListener("change", handleFileUploadChange);
 
+  const addEffectDataToImage = (currentElement) => {
+    const changeSaturation = (effect) => {
+      const value = effectValue.getAttribute("value");
+      const percent = (effect.maxValue - effect.minValue) / MAX_SLIDER_VALUE;
+      return (percent * value) + effect.minValue;
+    }
+
+    const effect = Effect[currentElement.value.toUpperCase()];
+    uploadedImage.style.filter = `${effect.cssProperty}(${changeSaturation(effect)}${effect.unit})`;
+    uploadedImage.classList.add(effect.className);
+  }
+
+  const setSliderValue = (value) => {
+    pin.style.left = `${value}%`;
+    depth.style.width = `${value}%`;
+    effectValue.setAttribute("value", value);
+  }
+
   const applyEffect = (currentElement) => {
     if (currentElement.value === "none") {
       hideElement(slider);
     } else {
       showElement(slider);
-    }
-
-    const addEffectDataToImage = (currentElement) => {
-      const effect = Effect[currentElement.value.toUpperCase()];
-      uploadedImage.style.filter = `${effect.cssProperty}
-                                  (${effect.maxValue}
-                                  ${effect.unit})`;
-      uploadedImage.classList.add(effect.className);
-    }
-
-    const setSliderValue = (value) => {
-      pin.style.left = `${value}%`;
-      depth.style.width = `${value}%`;
-      effectValue.setAttribute("value", value);
-    }
+    } 
 
     deleteOldEffectDataFromImage();
     addEffectDataToImage(currentElement);
@@ -373,13 +379,60 @@ const initFileUpload = () => {
   const handleEffectFocus = (evt) => {
     applyEffect(evt.target);
   }
+
+  const handlePinMouseDown = (evt) => {
+    evt.preventDefault();
+
+    let shift = {
+      x: 0
+    };
+
+    let startCoord = {
+      x: evt.pageX
+    };
+
+    const handlePinMouseMove = (moveEvt) => {
+      moveEvt.preventDefault();
+
+      shift = {
+        x: startCoord.x - moveEvt.pageX 
+      };
+
+      startCoord = {
+        x: moveEvt.pageX
+      };
+
+      let value = ((pin.offsetLeft - shift.x) / LINE_SATURATION_LENGTH) * MAX_SLIDER_VALUE;
+
+      if (value > MAX_SLIDER_VALUE) {
+        value = MAX_SLIDER_VALUE;
+      } else {
+        if (value < MIN_SLIDER_VALUE) {
+          value = MIN_SLIDER_VALUE;
+        }
+      }
+
+      setSliderValue(value);
+    }
+
+    const handlePinMouseUp = (upEvt) => {
+      upEvt.preventDefault();
+
+      pin.removeEventListener("mousemove", handlePinMouseMove);
+      pin.removeEventListener("mouseup", handlePinMouseUp);
+    }
+
+    pin.addEventListener("mousemove", handlePinMouseMove);
+    pin.addEventListener("mouseup", handlePinMouseUp);
+  }
   
   const setEditFormListeners = () => {
     editorCloseButton.addEventListener("click", handleImageEditorCloseClick);
     document.addEventListener("keydown", handleImageEditorCloseKeyDown);
     hashtagsInput.addEventListener("input", handleHashtagInput);
     form.addEventListener("submit", handleFormSubmit);
-
+    pin.addEventListener("mousedown", handlePinMouseDown);
+    
     effectsRadio.forEach((effect) => {
       effect.addEventListener("focus", handleEffectFocus);
     });
@@ -455,6 +508,7 @@ const initFileUpload = () => {
     document.removeEventListener("keydown", handleImageEditorCloseKeyDown);
     hashtagsInput.removeEventListener("input", handleHashtagInput);
     form.removeEventListener("submit", handleFormSubmit);
+    pin.removeEventListener("mousedown", handlePinMouseDown);
 
     effectsRadio.forEach((effect) => {
       effect.removeEventListener("focus", handleEffectFocus);
