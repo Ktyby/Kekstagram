@@ -19,7 +19,6 @@ const ESCAPE = "Escape";
 const MAX_HASHTAGS_NUMBER = 5;
 const MAX_HASHTAG_LENGTH = 20;
 const SEPARATOR = "||";
-const LINE_SATURATION_LENGTH = 453;
 
 // Данные //
 
@@ -327,12 +326,13 @@ const initFileUpload = () => {
   const editorCloseButton = overlay.querySelector(".img-upload__cancel");
   const effectsRadio = overlay.querySelectorAll(".effects__radio");
   const slider = overlay.querySelector(".img-upload__effect-level");
-  const pin = slider.querySelector(".effect-level__pin");
-  const depth = slider.querySelector(".effect-level__depth");
+  const line = slider.querySelector(".effect-level__line");
+  const pin = line.querySelector(".effect-level__pin");
+  const depth = line.querySelector(".effect-level__depth");
   const effectValue = slider.querySelector(".effect-level__value");
   const hashtagsInput = overlay.querySelector(".text__hashtags");
   const descriptionInput = overlay.querySelector(".text__description");
-
+  let currentElement;
   const handleFileUploadChange = () => {
     showElement(overlay);
     hideElement(slider); 
@@ -347,14 +347,14 @@ const initFileUpload = () => {
   uploadInput.addEventListener("change", handleFileUploadChange);
 
   const addEffectDataToImage = (currentElement) => {
-    const changeSaturation = (effect) => {
+    const getSaturation = (effect) => {
       const value = effectValue.getAttribute("value");
       const percent = (effect.maxValue - effect.minValue) / MAX_SLIDER_VALUE;
       return (percent * value) + effect.minValue;
     }
 
     const effect = Effect[currentElement.value.toUpperCase()];
-    uploadedImage.style.filter = `${effect.cssProperty}(${changeSaturation(effect)}${effect.unit})`;
+    uploadedImage.style.filter = `${effect.cssProperty}(${getSaturation(effect)}${effect.unit})`;
     uploadedImage.classList.add(effect.className);
   }
 
@@ -372,47 +372,46 @@ const initFileUpload = () => {
     } 
 
     deleteOldEffectDataFromImage();
-    addEffectDataToImage(currentElement);
+
+    const effect = Effect[currentElement.value.toUpperCase()];
+    uploadedImage.style.filter = `${effect.cssProperty}(${effect.maxValue}${effect.unit})`;
+    uploadedImage.classList.add(effect.className);
+
     setSliderValue(MAX_SLIDER_VALUE);
   }
 
   const handleEffectFocus = (evt) => {
-    applyEffect(evt.target);
+    currentElement = evt.target;
+    applyEffect(currentElement);
+  }
+
+  const changePinPosition = (moveEvt, startCoord) => {
+    
   }
 
   const handlePinMouseDown = (evt) => {
     evt.preventDefault();
 
-    let shift = {
-      x: 0
-    };
-
-    let startCoord = {
-      x: evt.pageX
-    };
+    let startCoord = evt.pageX;
 
     const handlePinMouseMove = (moveEvt) => {
       moveEvt.preventDefault();
+      
+      const shiftX = startCoord - moveEvt.pageX; 
 
-      shift = {
-        x: startCoord.x - moveEvt.pageX 
-      };
+      startCoord = moveEvt.pageX;
 
-      startCoord = {
-        x: moveEvt.pageX
-      };
+      let pinPosition = ((pin.offsetLeft - shiftX) / line.clientWidth) * MAX_SLIDER_VALUE;
 
-      let value = ((pin.offsetLeft - shift.x) / LINE_SATURATION_LENGTH) * MAX_SLIDER_VALUE;
-
-      if (value > MAX_SLIDER_VALUE) {
-        value = MAX_SLIDER_VALUE;
-      } else {
-        if (value < MIN_SLIDER_VALUE) {
-          value = MIN_SLIDER_VALUE;
-        }
+      if (pinPosition > MAX_SLIDER_VALUE) {
+        pinPosition = MAX_SLIDER_VALUE;
+      }
+      if (pinPosition < MIN_SLIDER_VALUE) {
+        pinPosition = MIN_SLIDER_VALUE;
       }
 
-      setSliderValue(value);
+      setSliderValue(pinPosition);
+      addEffectDataToImage(currentElement);
     }
 
     const handlePinMouseUp = (upEvt) => {
