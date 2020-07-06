@@ -326,9 +326,9 @@ const initFileUpload = () => {
   const editorCloseButton = overlay.querySelector(".img-upload__cancel");
   const effectsRadio = overlay.querySelectorAll(".effects__radio");
   const slider = overlay.querySelector(".img-upload__effect-level");
-  const line = slider.querySelector(".effect-level__line");
-  const pin = line.querySelector(".effect-level__pin");
-  const depth = line.querySelector(".effect-level__depth");
+  const effectLine = slider.querySelector(".effect-level__line");
+  const pin = effectLine.querySelector(".effect-level__pin");
+  const depth = effectLine.querySelector(".effect-level__depth");
   const effectValue = slider.querySelector(".effect-level__value");
   const hashtagsInput = overlay.querySelector(".text__hashtags");
   const descriptionInput = overlay.querySelector(".text__description");
@@ -385,10 +385,6 @@ const initFileUpload = () => {
     applyEffect(currentElement);
   }
 
-  const changePinPosition = (moveEvt, startCoord) => {
-    
-  }
-
   const handlePinMouseDown = (evt) => {
     evt.preventDefault();
 
@@ -397,32 +393,36 @@ const initFileUpload = () => {
     const handlePinMouseMove = (moveEvt) => {
       moveEvt.preventDefault();
       
+      setEffectValue(moveEvt);
+    }
+
+    const handlePinMouseUp = (upEvt) => {
+      setEffectValue(upEvt);
+
+      document.removeEventListener("mousemove", handlePinMouseMove);
+      document.removeEventListener("mouseup", handlePinMouseUp);
+    }
+
+    const setEffectValue = (moveEvt) => {
       const shiftX = startCoord - moveEvt.pageX; 
-
+  
       startCoord = moveEvt.pageX;
-
-      let pinPosition = ((pin.offsetLeft - shiftX) / line.clientWidth) * MAX_SLIDER_VALUE;
-
+  
+      let pinPosition = ((pin.offsetLeft - shiftX) / effectLine.clientWidth) * MAX_SLIDER_VALUE;
+  
       if (pinPosition > MAX_SLIDER_VALUE) {
         pinPosition = MAX_SLIDER_VALUE;
       }
       if (pinPosition < MIN_SLIDER_VALUE) {
         pinPosition = MIN_SLIDER_VALUE;
       }
-
+  
       setSliderValue(pinPosition);
       addEffectDataToImage(currentElement);
     }
 
-    const handlePinMouseUp = (upEvt) => {
-      upEvt.preventDefault();
-
-      pin.removeEventListener("mousemove", handlePinMouseMove);
-      pin.removeEventListener("mouseup", handlePinMouseUp);
-    }
-
-    pin.addEventListener("mousemove", handlePinMouseMove);
-    pin.addEventListener("mouseup", handlePinMouseUp);
+    document.addEventListener("mousemove", handlePinMouseMove);
+    document.addEventListener("mouseup", handlePinMouseUp);
   }
   
   const setEditFormListeners = () => {
