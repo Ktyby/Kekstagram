@@ -333,6 +333,7 @@ const initFileUpload = () => {
   const hashtagsInput = overlay.querySelector(".text__hashtags");
   const descriptionInput = overlay.querySelector(".text__description");
   let currentElement;
+  
   const handleFileUploadChange = () => {
     showElement(overlay);
     hideElement(slider); 
@@ -388,35 +389,29 @@ const initFileUpload = () => {
   const handlePinMouseDown = (evt) => {
     evt.preventDefault();
 
-    let startCoord = evt.pageX;
+    const startCoord = effectLine.getBoundingClientRect().left;
 
     const handlePinMouseMove = (moveEvt) => {
-      moveEvt.preventDefault();
-      
       setEffectValue(moveEvt);
     }
 
     const handlePinMouseUp = (upEvt) => {
-      setEffectValue(upEvt);
-
       document.removeEventListener("mousemove", handlePinMouseMove);
       document.removeEventListener("mouseup", handlePinMouseUp);
     }
 
-    const setEffectValue = (moveEvt) => {
-      const shiftX = startCoord - moveEvt.pageX; 
-  
-      startCoord = moveEvt.pageX;
-  
-      let pinPosition = ((pin.offsetLeft - shiftX) / effectLine.clientWidth) * MAX_SLIDER_VALUE;
-  
-      if (pinPosition > MAX_SLIDER_VALUE) {
-        pinPosition = MAX_SLIDER_VALUE;
+    const setEffectValue = (evt) => {
+      let newCoord = evt.pageX - startCoord;
+      let sliderLength = effectLine.clientWidth;
+
+      if (newCoord < MIN_SLIDER_VALUE) {
+        newCoord = MIN_SLIDER_VALUE;
       }
-      if (pinPosition < MIN_SLIDER_VALUE) {
-        pinPosition = MIN_SLIDER_VALUE;
+      if (newCoord > sliderLength) {
+        newCoord = sliderLength;
       }
-  
+
+      const pinPosition = newCoord * 100 / sliderLength;
       setSliderValue(pinPosition);
       addEffectDataToImage(currentElement);
     }
