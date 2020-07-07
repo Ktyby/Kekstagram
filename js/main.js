@@ -332,7 +332,7 @@ const initFileUpload = () => {
   const effectValue = slider.querySelector(".effect-level__value");
   const hashtagsInput = overlay.querySelector(".text__hashtags");
   const descriptionInput = overlay.querySelector(".text__description");
-  let currentElement;
+  let currentEffect;
   
   const handleFileUploadChange = () => {
     showElement(overlay);
@@ -347,14 +347,14 @@ const initFileUpload = () => {
 
   uploadInput.addEventListener("change", handleFileUploadChange);
 
-  const addEffectDataToImage = (currentElement) => {
+  const addEffectDataToImage = (currentEffect) => {
     const getSaturation = (effect) => {
       const value = effectValue.getAttribute("value");
       const percent = (effect.maxValue - effect.minValue) / MAX_SLIDER_VALUE;
       return (percent * value) + effect.minValue;
     }
 
-    const effect = Effect[currentElement.value.toUpperCase()];
+    const effect = Effect[currentEffect.value.toUpperCase()];
     uploadedImage.style.filter = `${effect.cssProperty}(${getSaturation(effect)}${effect.unit})`;
     uploadedImage.classList.add(effect.className);
   }
@@ -365,8 +365,8 @@ const initFileUpload = () => {
     effectValue.setAttribute("value", value);
   }
 
-  const applyEffect = (currentElement) => {
-    if (currentElement.value === "none") {
+  const applyEffect = (currentEffect) => {
+    if (currentEffect.value === "none") {
       hideElement(slider);
     } else {
       showElement(slider);
@@ -374,7 +374,7 @@ const initFileUpload = () => {
 
     deleteOldEffectDataFromImage();
 
-    const effect = Effect[currentElement.value.toUpperCase()];
+    const effect = Effect[currentEffect.value.toUpperCase()];
     uploadedImage.style.filter = `${effect.cssProperty}(${effect.maxValue}${effect.unit})`;
     uploadedImage.classList.add(effect.className);
 
@@ -382,8 +382,8 @@ const initFileUpload = () => {
   }
 
   const handleEffectFocus = (evt) => {
-    currentElement = evt.target;
-    applyEffect(currentElement);
+    currentEffect = evt.target;
+    applyEffect(currentEffect);
   }
 
   const handlePinMouseDown = (evt) => {
@@ -413,7 +413,7 @@ const initFileUpload = () => {
 
       const pinPosition = newCoord * 100 / sliderLength;
       setSliderValue(pinPosition);
-      addEffectDataToImage(currentElement);
+      addEffectDataToImage(currentEffect);
     }
 
     document.addEventListener("mousemove", handlePinMouseMove);
