@@ -325,7 +325,6 @@ const initFileUpload = () => {
   const uploadedImage = overlay.querySelector(".img-upload__preview img");
   const editorCloseButton = overlay.querySelector(".img-upload__cancel");
   const effectsRadio = overlay.querySelectorAll(".effects__radio");
-  const originalEffect = overlay.querySelector(".effects__radio");
   const slider = overlay.querySelector(".img-upload__effect-level");
   const effectLine = slider.querySelector(".effect-level__line");
   const pin = effectLine.querySelector(".effect-level__pin");
@@ -336,8 +335,6 @@ const initFileUpload = () => {
   let currentEffect = {};
 
   const handleFileUploadChange = () => {
-    originalEffect.checked = true;
-
     showElement(overlay);
     hideElement(slider); 
     
@@ -382,8 +379,8 @@ const initFileUpload = () => {
 
   const handleEffectFocus = (evt) => {
     deleteOldEffectDataFromImage();
-    evt.target.checked = true;
     applyEffect(evt.target.value);
+    evt.target.checked = true;
   }
 
   const handlePinMouseDown = (evt) => {
