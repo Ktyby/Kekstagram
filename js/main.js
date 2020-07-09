@@ -93,42 +93,42 @@ const AVATARS = [
 
 const Effect = {
   NONE: {
-    className: "effects__preview--none",
+    effectName: "none",
     cssProperty: "none",
     maxValue: null,
     minValue: null,
     unit: ""
   },
   CHROME: {
-    className: "effects__preview--chrome",
+    effectName: "chrome",
     cssProperty: "grayscale",
     maxValue: 1,
     minValue: 0,
     unit: ""
   },
   SEPIA: {
-    className: "effects__preview--sepia",
+    effectName: "sepia",
     cssProperty: "sepia",
     maxValue: 1,
     minValue: 0,
     unit: ""
   },
   MARVIN: {
-    className: "effects__preview--marvin",
+    effectName: "marvin",
     cssProperty: "invert",
     maxValue: 100,
     minValue: 0,
     unit: "%"
   },
   PHOBOS: {
-    className: "effects__preview--phobos",
+    effectName: "phobos",
     cssProperty: "blur",
     maxValue: 3,
     minValue: 0,
     unit: "px"
   },
   HEAT: {
-    className: "effects__preview--heat",
+    effectName: "heat",
     cssProperty: "brightness",
     maxValue: 3,
     minValue: 1,
@@ -199,7 +199,7 @@ const generatePicturesData = () => {
 
 const renderAllPictures = () => {
   const picturesContainer = document.querySelector(".pictures");
-  const fragment = document.createDocumentFragment();
+  const fragment = new DocumentFragment();
   const pictureTemplate = document.querySelector("#picture").content.querySelector(".picture");
 
   const createPicture = (picture, index) => {
@@ -332,31 +332,26 @@ const initFileUpload = () => {
   const effectValue = slider.querySelector(".effect-level__value");
   const hashtagsInput = overlay.querySelector(".text__hashtags");
   const descriptionInput = overlay.querySelector(".text__description");
-  let currentEffect;
-  
+
+  let currentEffect = {};
+
   const handleFileUploadChange = () => {
     showElement(overlay);
     hideElement(slider); 
+    
     setEditFormListeners();
-  }
-
-  const deleteOldEffectDataFromImage = () => {
-    uploadedImage.style.filter = "";
-    uploadedImage.className = "";
   }
 
   uploadInput.addEventListener("change", handleFileUploadChange);
 
-  const addEffectDataToImage = (currentEffect) => {
-    const getSaturation = (effect) => {
-      const value = effectValue.getAttribute("value");
+  const addEffectDataToImage = (currentEffect, filterValue) => {
+    const getEffectPower = (effect, value) => {
       const percent = (effect.maxValue - effect.minValue) / MAX_SLIDER_VALUE;
       return (percent * value) + effect.minValue;
     }
 
-    const effect = Effect[currentEffect.value.toUpperCase()];
-    uploadedImage.style.filter = `${effect.cssProperty}(${getSaturation(effect)}${effect.unit})`;
-    uploadedImage.classList.add(effect.className);
+    uploadedImage.style.filter = `${currentEffect.cssProperty}(${getEffectPower(currentEffect, filterValue)}${currentEffect.unit})`;
+    uploadedImage.classList.add(`effects__preview--${currentEffect.effectName}`);
   }
 
   const setSliderValue = (value) => {
@@ -365,8 +360,8 @@ const initFileUpload = () => {
     effectValue.setAttribute("value", value);
   }
 
-  const applyEffect = (currentEffect) => {
-    if (currentEffect.value === "none") {
+  const applyEffect = (effectObject) => {
+    if (effectObject === "none") {
       hideElement(slider);
     } else {
       showElement(slider);
@@ -374,16 +369,18 @@ const initFileUpload = () => {
 
     deleteOldEffectDataFromImage();
 
-    const effect = Effect[currentEffect.value.toUpperCase()];
+    const effect = Effect[effectObject.toUpperCase()];
     uploadedImage.style.filter = `${effect.cssProperty}(${effect.maxValue}${effect.unit})`;
-    uploadedImage.classList.add(effect.className);
+    uploadedImage.classList.add(`effects__preview--${effect.effectName}`);
+
+    currentEffect = effect;
 
     setSliderValue(MAX_SLIDER_VALUE);
   }
 
   const handleEffectFocus = (evt) => {
-    currentEffect = evt.target;
-    applyEffect(currentEffect);
+    deleteOldEffectDataFromImage();
+    applyEffect(evt.target.value);
   }
 
   const handlePinMouseDown = (evt) => {
@@ -395,7 +392,7 @@ const initFileUpload = () => {
       setEffectValue(moveEvt);
     }
 
-    const handlePinMouseUp = (upEvt) => {
+    const handlePinMouseUp = () => {
       document.removeEventListener("mousemove", handlePinMouseMove);
       document.removeEventListener("mouseup", handlePinMouseUp);
     }
@@ -413,7 +410,7 @@ const initFileUpload = () => {
 
       const pinPosition = newCoord * 100 / sliderLength;
       setSliderValue(pinPosition);
-      addEffectDataToImage(currentEffect);
+      addEffectDataToImage(currentEffect, pinPosition);
     }
 
     document.addEventListener("mousemove", handlePinMouseMove);
@@ -497,12 +494,18 @@ const initFileUpload = () => {
     return message;
   }
 
+  const deleteOldEffectDataFromImage = () => {
+    uploadedImage.style.filter = "";
+    uploadedImage.classList.remove(`effects__preview--${currentEffect.effectName}`);
+  }
+
   const removeEditFormListeners = () => {
     editorCloseButton.removeEventListener("click", handleImageEditorCloseClick);
     document.removeEventListener("keydown", handleImageEditorCloseKeyDown);
     hashtagsInput.removeEventListener("input", handleHashtagInput);
     form.removeEventListener("submit", handleFormSubmit);
     pin.removeEventListener("mousedown", handlePinMouseDown);
+    deleteOldEffectDataFromImage();
 
     effectsRadio.forEach((effect) => {
       effect.removeEventListener("focus", handleEffectFocus);
@@ -519,7 +522,6 @@ const initFileUpload = () => {
     clearInput();
     hideElement(overlay);
     removeEditFormListeners();
-    deleteOldEffectDataFromImage();
   }
 
   const handleImageEditorCloseClick = () => {
