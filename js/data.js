@@ -86,8 +86,6 @@
 
 	const picturesData = [];
 
-	window.picturesData = picturesData;
-
 	// Получение рандома //
 
 	const getRandomIntegerFromRange = (minValue, maxValue) => {
@@ -124,4 +122,5 @@
 	}
 
 	generatePicturesData();
+	window.picturesData = picturesData;
 })()

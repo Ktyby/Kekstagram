@@ -33,9 +33,11 @@
     }
   }
 
-  window.showElement = showElement;
-  window.hideElement = hideElement;
-  window.clearContentsOfElement = clearContentsOfElement;
-  window.isEnterEvent = isEnterEvent;
-  window.isEscapeEvent = isEscapeEvent;
+  window.utils = {
+    showElement,
+    hideElement,
+    clearContentsOfElement,
+    isEnterEvent,
+    isEscapeEvent
+  };
 })()

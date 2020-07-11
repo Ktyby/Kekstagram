@@ -6,21 +6,25 @@
 	const MAX_SHOWN_COMMENTS_COUNT = 5;
 
 	// Функциии работы с большими изображениями //
+	const bigPicture = document.querySelector(".big-picture");
+	const image = bigPicture.querySelector(".big-picture__img img");
+	const commentsCount = bigPicture.querySelector(".comments-count");
+	const socialCaption = bigPicture.querySelector(".social__caption");
+	const likesCount = bigPicture.querySelector(".likes-count");
+	const commentsList = bigPicture.querySelector(".social__comments");
+	const socialCommentCount = document.querySelector(".social__comment-count");
+	const commentsLoader = document.querySelector(".comments-loader");
 
 	const renderBigPicture = (pictureID) => {
-		const bigPicture = document.querySelector(".big-picture");
-	
 		const assignDataForBigPicture = () => {  
-			bigPicture.querySelector(".big-picture__img img").src = picturesData[pictureID].image;
-			bigPicture.querySelector(".comments-count").textContent = picturesData[pictureID].comments.length;
-			bigPicture.querySelector(".social__caption").textContent = picturesData[pictureID].description;
-			bigPicture.querySelector(".likes-count").textContent = picturesData[pictureID].likes;
+			image.src = picturesData[pictureID].image;
+			commentsCount.textContent = picturesData[pictureID].comments.length;
+			socialCaption.textContent = picturesData[pictureID].description;
+			likesCount.textContent = picturesData[pictureID].likes;
 		}
 	
 		const renderCommentsForBigPicture = (pictureID) => {
-			const commentsList = bigPicture.querySelector(".social__comments");
-	
-			clearContentsOfElement(commentsList); // Удаление первого комментария из вёрстки
+			window.utils.clearContentsOfElement(commentsList); // Удаление первого комментария из вёрстки
 			
 			const createComments = (pictureID) => {
 				const fragment = new DocumentFragment();
@@ -69,13 +73,13 @@
 		}
 		
 		const hideCommentsCounter = () => {
-			document.querySelector(".social__comment-count").classList.add("visually-hidden");
-			document.querySelector(".comments-loader").classList.add("visually-hidden");
+			socialCommentCount.classList.add("visually-hidden");
+			commentsLoader.classList.add("visually-hidden");
 		}
 		
 		renderCommentsForBigPicture(pictureID);
 		assignDataForBigPicture();
-		showElement(bigPicture);
+		window.utils.showElement(bigPicture);
 		hideCommentsCounter();
 	}
 
