@@ -268,7 +268,7 @@
 	}
 	
 	const handleImageEditorCloseKeyDown = (downEvt) => {
-		isEscapeEvent(downEvt, (evt) => {
+		window.utils.isEscapeEvent(downEvt, (evt) => {
 			if (descriptionInput !== document.activeElement && hashtagsInput !== document.activeElement) {
 				evt.preventDefault();
 				closeEditForm();

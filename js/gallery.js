@@ -25,6 +25,16 @@
 	picturesContainer.append(fragment);
 		
 	const miniaturs = document.querySelectorAll(".picture");
+	const handlePictureClick = (evt) => {
+		renderBigPicture(getPictureAttribute(evt));
+	}
+
+	const handlePictureKeyDown = (downEvt) => {
+		window.utils.isEnterEvent(downEvt, (evt) => {
+			evt.preventDefault();
+			window.renderBigPicture(getPictureAttribute(evt));
+		});
+	}
 
 	miniaturs.forEach((picture) => {
 		picture.addEventListener("click", handlePictureClick);
@@ -33,17 +43,6 @@
 	
 	const getPictureAttribute = (evt) => {
 		return evt.currentTarget.getAttribute("data-number");
-	}
-	
-	const handlePictureClick = (evt) => {
-		renderBigPicture(getPictureAttribute(evt));
-	}
-	
-	const handlePictureKeyDown = (downEvt) => {
-		isEnterEvent(downEvt, (evt) => {
-			evt.preventDefault();
-			window.renderBigPicture(getPictureAttribute(evt));
-		});
 	}
 
 })()
