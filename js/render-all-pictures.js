@@ -1,8 +1,6 @@
 "use strict";
 
 (() => {
-	// Функции работы с миниатюрами //
-
 	const picturesContainer = document.querySelector(".pictures");
 	const fragment = new DocumentFragment();
 	const pictureTemplate = document.querySelector("#picture").content.querySelector(".picture");

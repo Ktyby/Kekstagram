@@ -1,12 +1,8 @@
 "use strict";
 
 (() => {
-  // Константы //
-
   const ENTER = "Enter";
   const ESCAPE = "Escape";
-  
-  // Функции общего назначения //
 
   const clearContentsOfElement = (element) => {
     element.innerHTML = "";

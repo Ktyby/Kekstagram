@@ -1,15 +1,11 @@
 "use strict";
 
 (() => {
-	// Константы //
-
 	const MIN_SLIDER_VALUE = 0;
 	const MAX_SLIDER_VALUE = 100;
 	const MAX_HASHTAGS_NUMBER = 5;
 	const MAX_HASHTAG_LENGTH = 20;
 	const SEPARATOR = "||";
-
-	// Эффекты //
 
 	const Effect = {
 		NONE: {
@@ -56,7 +52,6 @@
 		}
 	}
 
-	// Функции для работы с редактором //
 	const form = document.querySelector(".img-upload__form");
 	const uploadInput = form.querySelector(".img-upload__input");
 	const overlay = form.querySelector(".img-upload__overlay");

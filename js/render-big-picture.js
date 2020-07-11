@@ -1,11 +1,9 @@
 "use strict";
 
 (() => {
-	// Константа //
 
 	const MAX_SHOWN_COMMENTS_COUNT = 5;
 
-	// Функциии работы с большими изображениями //
 	const bigPicture = document.querySelector(".big-picture");
 	const image = bigPicture.querySelector(".big-picture__img img");
 	const commentsCount = bigPicture.querySelector(".comments-count");

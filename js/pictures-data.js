@@ -1,8 +1,6 @@
 "use strict";
 
 (() => {
-	// Константы //
-
 	const MIN_NUMBER_COMMENTS = 0;
 	const MAX_NUMBER_COMMENTS = 20;
 	const MIN_INDEX_AVATAR = 0;
@@ -12,8 +10,6 @@
 	const MIN_NUMBER_LIKES = 15;
 	const MAX_NUMBER_LIKES = 200;
 	const MIN_INDEX_DESCRIPTION = 0;
-
-	// Массивы данных //
 
 	const MESSAGES = [
 		"Всё отлично!",
@@ -86,13 +82,9 @@
 
 	const picturesData = [];
 
-	// Получение рандома //
-
 	const getRandomIntegerFromRange = (minValue, maxValue) => {
 		return Math.floor(Math.random() * (maxValue - minValue)) + minValue;
 	}
-
-	// Генерация данных в picturesData //
 
 	const generatePicturesData = () => {
 		const generateCommentsData = () => {
