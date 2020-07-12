@@ -1,8 +1,10 @@
 "use strict";
 
 (() => {
-  const ENTER = "Enter";
-  const ESCAPE = "Escape";
+  const Key = {
+    ENTER: "Enter",
+    ESCAPE: "Escape"
+  }
 
   const clearContentsOfElement = (element) => {
     element.innerHTML = "";
@@ -11,20 +13,19 @@
   const hideElement = (element) => {
     element.classList.add("hidden");
   }
-  
-  const isEscapeEvent = (evt, callback) => {
-    if (evt.code === ESCAPE) {
-      callback(evt);
-    }
-  }
-  
+
   const showElement = (element) => {
     element.classList.remove("hidden");
   }
   
+  const isEscapeEvent = (evt, callback) => {
+    if (evt.code === Key.ESCAPE) {
+      callback(evt);
+    }
+  } 
   
   const isEnterEvent = (evt, callback) => {
-    if (evt.code === ENTER) {
+    if (evt.code === Key.ENTER) {
       callback(evt);
     }
   }

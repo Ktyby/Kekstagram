@@ -1,7 +1,6 @@
 "use strict";
 
 (() => {
-
 	const MAX_SHOWN_COMMENTS_COUNT = 5;
 
 	const bigPicture = document.querySelector(".big-picture");
@@ -27,8 +26,8 @@
 			const createComments = (pictureID) => {
 				const fragment = new DocumentFragment();
 			
-				const createCommentWrapper = (index) => {
-					const createComment = () => {
+				const createComment = (index) => {
+					const createCommentItem = () => {
 						const newComment = document.createElement('li');
 						newComment.classList.add("social__comment");
 		
@@ -53,15 +52,15 @@
 						return message;
 					}
 	
-					const comment = createComment();
-					comment.append(createAvatar(),createMessage());
-					return comment;
+					const commentWrapper = createCommentItem();
+					commentWrapper.append(createAvatar(),createMessage());
+					return commentWrapper;
 				}
 							
 				const maxShowCommentCount = Math.min(picturesData[pictureID].comments.length, MAX_SHOWN_COMMENTS_COUNT);
 	
 				for (let index = 0; index < maxShowCommentCount; index++) {
-					fragment.append(createCommentWrapper(index));
+					fragment.append(createComment(index));
 				}
 				 
 				return fragment;

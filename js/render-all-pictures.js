@@ -16,15 +16,16 @@
 		return image;
 	}
 	
-	picturesData.forEach((picture, index) => {
+	window.picturesData.forEach((picture, index) => {
 		fragment.append(createPicture(picture, index));
 	});
 
 	picturesContainer.append(fragment);
 		
 	const miniaturs = document.querySelectorAll(".picture");
+	
 	const handlePictureClick = (evt) => {
-		renderBigPicture(getPictureAttribute(evt));
+		window.renderBigPicture(getPictureAttribute(evt));
 	}
 
 	const handlePictureKeyDown = (downEvt) => {

@@ -54,22 +54,22 @@
 
 	const form = document.querySelector(".img-upload__form");
 	const uploadInput = form.querySelector(".img-upload__input");
-	const overlay = form.querySelector(".img-upload__overlay");
-	const uploadedImage = overlay.querySelector(".img-upload__preview img");
-	const editorCloseButton = overlay.querySelector(".img-upload__cancel");
-	const effectsRadio = overlay.querySelectorAll(".effects__radio");
-	const slider = overlay.querySelector(".img-upload__effect-level");
+	const imageEditor = form.querySelector(".img-upload__overlay");
+	const uploadedImage = imageEditor.querySelector(".img-upload__preview img");
+	const editorCloseButton = imageEditor.querySelector(".img-upload__cancel");
+	const effectsRadio = imageEditor.querySelectorAll(".effects__radio");
+	const slider = imageEditor.querySelector(".img-upload__effect-level");
 	const effectLine = slider.querySelector(".effect-level__line");
 	const pin = effectLine.querySelector(".effect-level__pin");
 	const depth = effectLine.querySelector(".effect-level__depth");
 	const effectValue = slider.querySelector(".effect-level__value");
-	const hashtagsInput = overlay.querySelector(".text__hashtags");
-	const descriptionInput = overlay.querySelector(".text__description");
+	const hashtagsInput = imageEditor.querySelector(".text__hashtags");
+	const descriptionInput = imageEditor.querySelector(".text__description");
 
-	let currentEffect = {};
+	let currentEffect = Effect.NONE;
 
 	const handleFileUploadChange = () => {
-		window.utils.showElement(overlay);
+		window.utils.showElement(imageEditor);
 		window.utils.hideElement(slider); 
 		
 		setEditFormListeners();
@@ -114,7 +114,6 @@
 	const handleEffectFocus = (evt) => {
 		deleteOldEffectDataFromImage();
 		applyEffect(evt.target.value);
-		evt.target.checked = true;
 	}
 
 	const handlePinMouseDown = (evt) => {
@@ -170,6 +169,7 @@
 
 	const handleFormSubmit = (evt) => {
 		evt.preventDefault();
+		console.log("send form", currentEffect);
 	}
 
 	const getFormValidationErrors = (evt) => { // Валидация
@@ -254,7 +254,7 @@
 
 	const closeEditForm = () => {
 		clearInput();
-		window.utils.hideElement(overlay);
+		window.utils.hideElement(imageEditor);
 		removeEditFormListeners();
 	}
 
