@@ -27,7 +27,7 @@
 				const fragment = new DocumentFragment();
 			
 				const createComment = (index) => {
-					const createCommentItem = () => {
+					const createCommentWrapper = () => {
 						const newComment = document.createElement('li');
 						newComment.classList.add("social__comment");
 		
@@ -52,7 +52,7 @@
 						return message;
 					}
 	
-					const commentWrapper = createCommentItem();
+					const commentWrapper = createCommentWrapper();
 					commentWrapper.append(createAvatar(),createMessage());
 					return commentWrapper;
 				}

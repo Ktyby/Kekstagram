@@ -169,7 +169,6 @@
 
 	const handleFormSubmit = (evt) => {
 		evt.preventDefault();
-		console.log("send form", currentEffect);
 	}
 
 	const getFormValidationErrors = (evt) => { // Валидация
