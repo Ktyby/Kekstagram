@@ -14,10 +14,10 @@
 
 	const renderBigPicture = (pictureID) => {
 		const assignDataForBigPicture = () => {  
-			image.src = picturesData[pictureID].image;
-			commentsCount.textContent = picturesData[pictureID].comments.length;
-			socialCaption.textContent = picturesData[pictureID].description;
-			likesCount.textContent = picturesData[pictureID].likes;
+			image.src = window.data[pictureID].url;
+			commentsCount.textContent = window.data[pictureID].comments.length;
+			socialCaption.textContent = window.data[pictureID].description;
+			likesCount.textContent = window.data[pictureID].likes;
 		}
 	
 		const renderCommentsForBigPicture = (pictureID) => {
@@ -38,7 +38,7 @@
 						const avatar = document.createElement("img");
 						avatar.classList.add("social__picture");
 	
-						avatar.src = picturesData[pictureID].comments[index].avatar; 
+						avatar.src = window.data[pictureID].comments[index].avatar; 
 						
 						return avatar;
 					}
@@ -47,7 +47,7 @@
 						const message = document.createElement("p");
 						message.classList.add("social__text");
 	
-						message.textContent = picturesData[pictureID].comments[index].message; 
+						message.textContent = window.data[pictureID].comments[index].message; 
 	
 						return message;
 					}
@@ -57,7 +57,7 @@
 					return commentWrapper;
 				}
 							
-				const maxShowCommentCount = Math.min(picturesData[pictureID].comments.length, MAX_SHOWN_COMMENTS_COUNT);
+				const maxShowCommentCount = Math.min(window.data[pictureID].comments.length, MAX_SHOWN_COMMENTS_COUNT);
 	
 				for (let index = 0; index < maxShowCommentCount; index++) {
 					fragment.append(createComment(index));

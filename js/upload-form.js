@@ -165,10 +165,131 @@
 	const handleHashtagInput = (evt) => {    
 		hashtagsInput.setCustomValidity("");
 		hashtagsInput.setCustomValidity(getFormValidationErrors(evt));
+		hashtagsInput.style.borderColor = getFormValidationErrors(evt) ? 'red' : '';
+	}
+
+	const clearInput = () => {
+		uploadInput.value = "";
+		descriptionInput.value = "";
+		hashtagsInput.value = "";
+		hashtagsInput.style.borderColor = "";
+		hashtagsInput.setCustomValidity("");
+	}
+
+	const deleteOldEffectDataFromImage = () => {
+		uploadedImage.style.filter = "";
+		effectValue.removeAttribute("value");
+		uploadedImage.classList.remove(`effects__preview--${currentEffect.effectName}`);
+	}
+
+	const removeEditFormListeners = () => {
+		editorCloseButton.removeEventListener("click", handleImageEditorCloseClick);
+		document.removeEventListener("keydown", handleImageEditorCloseKeyDown);
+		hashtagsInput.removeEventListener("input", handleHashtagInput);
+		form.removeEventListener("submit", handleFormSubmit);
+		pin.removeEventListener("mousedown", handlePinMouseDown);
+		deleteOldEffectDataFromImage();
+
+		effectsRadio.forEach((effect) => {
+			effect.removeEventListener("focus", handleEffectFocus);
+		});
+	}
+
+	const closeEditForm = () => {
+		clearInput();
+		window.utils.hideElement(imageEditor);
+		removeEditFormListeners();
 	}
 
 	const handleFormSubmit = (evt) => {
+		const main = document.querySelector("main");
+
 		evt.preventDefault();
+
+		const data = new FormData(form);
+
+		const handleLoad = () => {
+			const successTemplate = document.querySelector("#success").content.querySelector(".success");
+			const successbutton = successTemplate.querySelector(".success__button");
+			const successElement = successTemplate.cloneNode(true);
+	
+			main.appendChild(successElement);
+
+			const hideErrorTemplate = () => {
+				removeHideTemplateSuccess();
+				main.removeChild(successElement);
+			}
+
+			const handleClickHideTemplate = () => {
+				hideErrorTemplate();
+			}
+	
+			const handleKeyDownHideTemplate = (downEvt) => {
+				window.utils.isEscapeEvent(downEvt, () => {
+					hideErrorTemplate();
+				});
+			}
+	
+			const setHideTemplateSuccess = () => {
+				successElement.addEventListener("click", handleClickHideTemplate);
+				document.addEventListener("keydown", handleKeyDownHideTemplate);
+				successbutton.addEventListener("click", handleClickHideTemplate);
+			}
+	
+			const removeHideTemplateSuccess = () => {
+				successElement.removeEventListener("click", handleClickHideTemplate);
+				document.removeEventListener("keydown", handleKeyDownHideTemplate);
+				successbutton.removeEventListener("click", handleClickHideTemplate);
+			}
+
+			closeEditForm();
+			setHideTemplateSuccess();
+		}
+	
+		const handleError = (errorMessage) => {
+			const errorTemplate = document.querySelector("#error").content.querySelector(".error");
+			errorTemplate.querySelector(".error__title").textContent = errorMessage;
+			const errorButton = errorTemplate.querySelectorAll(".error__button");
+			const errorElement = errorTemplate.cloneNode(true);
+	
+			main.appendChild(errorElement);
+	
+			const hideErrorTemplate = () => {
+				removeHideTemplateError();
+				main.removeChild(errorElement);
+			}
+	
+			const handleClickHideTemplate = () => {
+				hideErrorTemplate();
+			}
+	
+			const handleKeyDownHideTemplate = (downEvt) => {
+				window.utils.isEscapeEvent(downEvt, () => {
+					hideErrorTemplate();
+				});
+			}
+	
+			const setHideTemplateError = () => {
+				errorElement.addEventListener("click", handleClickHideTemplate);
+				document.addEventListener("keydown", handleKeyDownHideTemplate);
+				errorButton.forEach((button) => {
+					button.addEventListener("click", handleClickHideTemplate);
+				});
+			}
+	
+			const removeHideTemplateError = () => {
+				errorElement.removeEventListener("click", handleClickHideTemplate);
+				document.removeEventListener("keydown", handleKeyDownHideTemplate);
+				errorButton.forEach(button => {
+					button.removeEventListener("click", handleClickHideTemplate);
+				});
+			}	
+			
+			closeEditForm();
+			setHideTemplateError();
+		}	
+
+		window.backend.sendDataToServer(data, handleLoad, handleError);
 	}
 
 	const getFormValidationErrors = (evt) => { // Валидация
@@ -227,36 +348,6 @@
 		return message;
 	}
 
-	const deleteOldEffectDataFromImage = () => {
-		uploadedImage.style.filter = "";
-		uploadedImage.classList.remove(`effects__preview--${currentEffect.effectName}`);
-	}
-
-	const removeEditFormListeners = () => {
-		editorCloseButton.removeEventListener("click", handleImageEditorCloseClick);
-		document.removeEventListener("keydown", handleImageEditorCloseKeyDown);
-		hashtagsInput.removeEventListener("input", handleHashtagInput);
-		form.removeEventListener("submit", handleFormSubmit);
-		pin.removeEventListener("mousedown", handlePinMouseDown);
-		deleteOldEffectDataFromImage();
-
-		effectsRadio.forEach((effect) => {
-			effect.removeEventListener("focus", handleEffectFocus);
-		});
-	}
-
-	const clearInput = () => {
-		uploadInput.value = "";
-		descriptionInput.value = "";
-		hashtagsInput.value = "";
-	}
-
-	const closeEditForm = () => {
-		clearInput();
-		window.utils.hideElement(imageEditor);
-		removeEditFormListeners();
-	}
-
 	const handleImageEditorCloseClick = () => {
 		closeEditForm();
 	}
@@ -269,5 +360,4 @@
 			}
 		});
 	}
-
 })()
