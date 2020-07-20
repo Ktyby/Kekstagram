@@ -52,7 +52,10 @@
 		}
 	}
 
-	const form = document.querySelector(".img-upload__form");
+	const errorTemplate = document.querySelector("#error").content.querySelector(".error");
+	const successTemplate = document.querySelector("#success").content.querySelector(".success");
+	const main = document.querySelector("main");
+	const form = main.querySelector(".img-upload__form");
 	const uploadInput = form.querySelector(".img-upload__input");
 	const imageEditor = form.querySelector(".img-upload__overlay");
 	const uploadedImage = imageEditor.querySelector(".img-upload__preview img");
@@ -202,94 +205,92 @@
 	}
 
 	const handleFormSubmit = (evt) => {
-		const main = document.querySelector("main");
-
 		evt.preventDefault();
 
-		const data = new FormData(form);
+		const formData = new FormData(form);
 
 		const handleLoad = () => {
-			const successTemplate = document.querySelector("#success").content.querySelector(".success");
-			const successbutton = successTemplate.querySelector(".success__button");
 			const successElement = successTemplate.cloneNode(true);
 	
 			main.appendChild(successElement);
 
-			const hideErrorTemplate = () => {
-				removeHideTemplateSuccess();
+			const hideError = () => {
+				removeHandlersOnTemplate();
 				main.removeChild(successElement);
 			}
 
 			const handleClickHideTemplate = () => {
-				hideErrorTemplate();
+				hideError();
 			}
 	
 			const handleKeyDownHideTemplate = (downEvt) => {
 				window.utils.isEscapeEvent(downEvt, () => {
-					hideErrorTemplate();
+					hideError();
 				});
 			}
 	
-			const setHideTemplateSuccess = () => {
+			const setHandlersOnTemplate = () => {
 				successElement.addEventListener("click", handleClickHideTemplate);
 				document.addEventListener("keydown", handleKeyDownHideTemplate);
-				successbutton.addEventListener("click", handleClickHideTemplate);
 			}
 	
-			const removeHideTemplateSuccess = () => {
+			const removeHandlersOnTemplate = () => {
 				successElement.removeEventListener("click", handleClickHideTemplate);
 				document.removeEventListener("keydown", handleKeyDownHideTemplate);
-				successbutton.removeEventListener("click", handleClickHideTemplate);
 			}
 
 			closeEditForm();
-			setHideTemplateSuccess();
+			setHandlersOnTemplate();
 		}
 	
 		const handleError = (errorMessage) => {
-			const errorTemplate = document.querySelector("#error").content.querySelector(".error");
-			errorTemplate.querySelector(".error__title").textContent = errorMessage;
-			const errorButton = errorTemplate.querySelectorAll(".error__button");
 			const errorElement = errorTemplate.cloneNode(true);
+			errorElement.querySelector(".error__title").textContent = errorMessage;
+			const repeatButton = errorElement.querySelector(".error__button:first-child");
 	
 			main.appendChild(errorElement);
 	
-			const hideErrorTemplate = () => {
-				removeHideTemplateError();
+			const hideError = () => {
+				removeHandlersOnTemplate();
 				main.removeChild(errorElement);
 			}
 	
 			const handleClickHideTemplate = () => {
-				hideErrorTemplate();
+				window.utils.showElement(form);
+				hideError();
+				closeEditForm();
 			}
 	
 			const handleKeyDownHideTemplate = (downEvt) => {
 				window.utils.isEscapeEvent(downEvt, () => {
-					hideErrorTemplate();
+					window.utils.showElement(form);
+					hideError();
+					closeEditForm();
 				});
 			}
+
+			const handleClickRepeat = () => {
+				window.utils.showElement(form);
+				hideError();
+			}
 	
-			const setHideTemplateError = () => {
+			const setHandlersOnTemplate = () => {
 				errorElement.addEventListener("click", handleClickHideTemplate);
 				document.addEventListener("keydown", handleKeyDownHideTemplate);
-				errorButton.forEach((button) => {
-					button.addEventListener("click", handleClickHideTemplate);
-				});
+				repeatButton.addEventListener("click", handleClickRepeat);
 			}
 	
-			const removeHideTemplateError = () => {
+			const removeHandlersOnTemplate = () => {
 				errorElement.removeEventListener("click", handleClickHideTemplate);
 				document.removeEventListener("keydown", handleKeyDownHideTemplate);
-				errorButton.forEach(button => {
-					button.removeEventListener("click", handleClickHideTemplate);
-				});
+				repeatButton.removeEventListener("click", handleClickRepeat);
 			}	
 			
-			closeEditForm();
-			setHideTemplateError();
+			window.utils.hideElement(form);
+			setHandlersOnTemplate();
 		}	
 
-		window.backend.sendDataToServer(data, handleLoad, handleError);
+		window.backend.sendData(formData, handleLoad, handleError);
 	}
 
 	const getFormValidationErrors = (evt) => { // Валидация

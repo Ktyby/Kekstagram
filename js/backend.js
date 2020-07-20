@@ -4,13 +4,14 @@
   const GET_URL = "https://javascript.pages.academy/kekstagram/data";
   const POST_URL = 'https://javascript.pages.academy/kekstagram';
 
-  const getDataFromServer = (handleLoad, handleError) => {
+  const getData = (handleLoad, handleError) => {
     const xhr = new XMLHttpRequest();
+    xhr.responseType = "json";
 
     xhr.open("GET", GET_URL);    
 
     const handleRequestLoad = () => {
-      handleLoad(xhr.responseText);
+      handleLoad(xhr.response);
     }
 
     const handleRequestError = () => {
@@ -23,7 +24,7 @@
     xhr.send();
   }
 
-  const sendDataToServer = (data, handleLoad, handleError) => {
+  const sendData = (data, handleLoad, handleError) => {
     const xhr = new XMLHttpRequest();
     xhr.responseType = "json";
 
@@ -32,7 +33,7 @@
     }
 
     const handleRequestError = () => {
-      handleError("Не удалось отправить данные, попробуйте позже)");
+      handleError("Не удалось отправить данные, попробуйте позже");
     }
 
     xhr.addEventListener("load", handleRequestLoad);
@@ -43,7 +44,7 @@
   }
 
   window.backend = {
-    getDataFromServer,
-    sendDataToServer
+    getData,
+    sendData
   }
 })()

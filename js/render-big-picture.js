@@ -13,11 +13,13 @@
 	const commentsLoader = document.querySelector(".comments-loader");
 
 	const renderBigPicture = (pictureID) => {
+		const currentPictureData = window.data[pictureID];
+
 		const assignDataForBigPicture = () => {  
-			image.src = window.data[pictureID].url;
-			commentsCount.textContent = window.data[pictureID].comments.length;
-			socialCaption.textContent = window.data[pictureID].description;
-			likesCount.textContent = window.data[pictureID].likes;
+			image.src = currentPictureData.url;
+			commentsCount.textContent = currentPictureData.comments.length;
+			socialCaption.textContent = currentPictureData.description;
+			likesCount.textContent = currentPictureData.likes;
 		}
 	
 		const renderCommentsForBigPicture = (pictureID) => {
@@ -38,7 +40,7 @@
 						const avatar = document.createElement("img");
 						avatar.classList.add("social__picture");
 	
-						avatar.src = window.data[pictureID].comments[index].avatar; 
+						avatar.src = currentPictureData.comments[index].avatar; 
 						
 						return avatar;
 					}
@@ -47,7 +49,7 @@
 						const message = document.createElement("p");
 						message.classList.add("social__text");
 	
-						message.textContent = window.data[pictureID].comments[index].message; 
+						message.textContent = currentPictureData.comments[index].message; 
 	
 						return message;
 					}
@@ -57,7 +59,7 @@
 					return commentWrapper;
 				}
 							
-				const maxShowCommentCount = Math.min(window.data[pictureID].comments.length, MAX_SHOWN_COMMENTS_COUNT);
+				const maxShowCommentCount = Math.min(currentPictureData.comments.length, MAX_SHOWN_COMMENTS_COUNT);
 	
 				for (let index = 0; index < maxShowCommentCount; index++) {
 					fragment.append(createComment(index));
