@@ -9,42 +9,43 @@
 	const handleError = (errorMessage) => {
 		const main = document.querySelector("main");
 		const errorTemplate = document.querySelector("#error").content.querySelector(".error");
+
 		const errorElement = errorTemplate.cloneNode(true);
-		errorElement.querySelector(".error__title").textContent = errorMessage;
-		const errorButtons = errorElement.querySelectorAll(".error__button");
 		
-		errorButtons.forEach((button) => {
-			window.utils.hideElement(button);
-		});
+		const errorButtons = errorElement.querySelector(".error__buttons");
+
+		errorElement.querySelector(".error__title").textContent = errorMessage;
+		
+		window.utils.hideElement(errorButtons);
 
 		main.appendChild(errorElement);
 
 		const hideError = () => {
-			removeHandlersOnTemplate();
+			removeErrorModalHandlers();
 			main.removeChild(errorElement);
 		}
 
-		const handleHideTemplateClick = () => {
+		const handleHideErrorClick = () => {
 			hideError();
 		}
 
-		const handleHideTemplateKeyDown = (downEvt) => {
+		const handleHideErrorKeyDown = (downEvt) => {
 			window.utils.isEscapeEvent(downEvt, () => {
 				hideError();
 			});
 		}
 
-		const setHandlersOnTemplate = () => {
-			errorElement.addEventListener("click", handleHideTemplateClick);
-			document.addEventListener("keydown", handleHideTemplateKeyDown);
+		const setErrorModalHandlers = () => {
+			errorElement.addEventListener("click", handleHideErrorClick);
+			document.addEventListener("keydown", handleHideErrorKeyDown);
 		}
 
-		const removeHandlersOnTemplate = () => {
-			errorElement.removeEventListener("click", handleHideTemplateClick);
-			document.removeEventListener("keydown", handleHideTemplateKeyDown);
+		const removeErrorModalHandlers = () => {
+			errorElement.removeEventListener("click", handleHideErrorClick);
+			document.removeEventListener("keydown", handleHideErrorKeyDown);
 		}
 
-		setHandlersOnTemplate();
+		setErrorModalHandlers();
 	}
 
 	window.backend.getData(handleLoad, handleError);

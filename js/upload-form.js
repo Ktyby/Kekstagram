@@ -204,7 +204,7 @@
 		removeEditFormListeners();
 	}
 
-	const handleFormSubmit = (evt) => {
+	const handleFormSubmit = (evt) => { // Отправка данных на сервер
 		evt.preventDefault();
 
 		const formData = new FormData(form);
@@ -215,53 +215,55 @@
 			main.appendChild(successElement);
 
 			const hideError = () => {
-				removeHandlersOnTemplate();
+				removeSuccessMessageHandlers();
 				main.removeChild(successElement);
 			}
 
-			const handleClickHideTemplate = () => {
+			const handleHideSuccessMessageClick = () => {
 				hideError();
 			}
 	
-			const handleKeyDownHideTemplate = (downEvt) => {
+			const handleHideSuccessMessageKeyDown = (downEvt) => {
 				window.utils.isEscapeEvent(downEvt, () => {
 					hideError();
 				});
 			}
 	
-			const setHandlersOnTemplate = () => {
-				successElement.addEventListener("click", handleClickHideTemplate);
-				document.addEventListener("keydown", handleKeyDownHideTemplate);
+			const setSuccessMessageHandlers = () => {
+				successElement.addEventListener("click", handleHideSuccessMessageClick);
+				document.addEventListener("keydown", handleHideSuccessMessageKeyDown);
 			}
 	
-			const removeHandlersOnTemplate = () => {
-				successElement.removeEventListener("click", handleClickHideTemplate);
-				document.removeEventListener("keydown", handleKeyDownHideTemplate);
+			const removeSuccessMessageHandlers = () => {
+				successElement.removeEventListener("click", handleHideSuccessMessageClick);
+				document.removeEventListener("keydown", handleHideSuccessMessageKeyDown);
 			}
 
 			closeEditForm();
-			setHandlersOnTemplate();
+			setSuccessMessageHandlers();
 		}
 	
 		const handleError = (errorMessage) => {
 			const errorElement = errorTemplate.cloneNode(true);
+
 			errorElement.querySelector(".error__title").textContent = errorMessage;
-			const repeatButton = errorElement.querySelector(".error__button:first-child");
+
+			const errorButton = errorElement.querySelector(".error__button:first-child");
 	
 			main.appendChild(errorElement);
 	
 			const hideError = () => {
-				removeHandlersOnTemplate();
+				removeErrorModalHandlers();
 				main.removeChild(errorElement);
 			}
 	
-			const handleClickHideTemplate = () => {
+			const handleHideErrorClick = () => {
 				window.utils.showElement(form);
 				hideError();
 				closeEditForm();
 			}
 	
-			const handleKeyDownHideTemplate = (downEvt) => {
+			const handleHideErrorKeyDown = (downEvt) => {
 				window.utils.isEscapeEvent(downEvt, () => {
 					window.utils.showElement(form);
 					hideError();
@@ -269,25 +271,25 @@
 				});
 			}
 
-			const handleClickRepeat = () => {
+			const handleReturnToEditorImageClick = () => {
 				window.utils.showElement(form);
 				hideError();
 			}
 	
-			const setHandlersOnTemplate = () => {
-				errorElement.addEventListener("click", handleClickHideTemplate);
-				document.addEventListener("keydown", handleKeyDownHideTemplate);
-				repeatButton.addEventListener("click", handleClickRepeat);
+			const setErrorModalHandlers = () => {
+				errorElement.addEventListener("click", handleHideErrorClick);
+				document.addEventListener("keydown", handleHideErrorKeyDown);
+				errorButton.addEventListener("click", handleReturnToEditorImageClick);
 			}
 	
-			const removeHandlersOnTemplate = () => {
-				errorElement.removeEventListener("click", handleClickHideTemplate);
-				document.removeEventListener("keydown", handleKeyDownHideTemplate);
-				repeatButton.removeEventListener("click", handleClickRepeat);
+			const removeErrorModalHandlers = () => {
+				errorElement.removeEventListener("click", handleHideErrorClick);
+				document.removeEventListener("keydown", handleHideErrorKeyDown);
+				errorButton.removeEventListener("click", handleReturnToEditorImageClick);
 			}	
 			
 			window.utils.hideElement(form);
-			setHandlersOnTemplate();
+			setErrorModalHandlers();
 		}	
 
 		window.backend.sendData(formData, handleLoad, handleError);
