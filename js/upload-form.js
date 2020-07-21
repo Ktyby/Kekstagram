@@ -168,7 +168,7 @@
 	const handleHashtagInput = (evt) => {    
 		hashtagsInput.setCustomValidity("");
 		hashtagsInput.setCustomValidity(getFormValidationErrors(evt));
-		hashtagsInput.style.borderColor = getFormValidationErrors(evt) ? 'red' : '';
+		hashtagsInput.style.borderColor = getFormValidationErrors(evt) ? "red" : "";
 	}
 
 	const deleteOldEffectDataFromImage = () => {
