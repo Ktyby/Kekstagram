@@ -21,8 +21,8 @@
 		main.appendChild(errorElement);
 
 		const hideError = () => {
-			removeErrorModalHandlers();
-			main.removeChild(errorElement);
+			removeErrorModalListeners();
+			errorElement.remove();
 		}
 
 		const handleHideErrorClick = () => {
@@ -35,17 +35,17 @@
 			});
 		}
 
-		const setErrorModalHandlers = () => {
+		const setErrorModalListeners = () => {
 			errorElement.addEventListener("click", handleHideErrorClick);
 			document.addEventListener("keydown", handleHideErrorKeyDown);
 		}
 
-		const removeErrorModalHandlers = () => {
+		const removeErrorModalListeners = () => {
 			errorElement.removeEventListener("click", handleHideErrorClick);
 			document.removeEventListener("keydown", handleHideErrorKeyDown);
 		}
 
-		setErrorModalHandlers();
+		setErrorModalListeners();
 	}
 
 	window.backend.getData(handleLoad, handleError);

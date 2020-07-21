@@ -199,6 +199,7 @@
 	}
 
 	const closeEditForm = () => {
+		form.reset();
 		clearInput();
 		window.utils.hideElement(imageEditor);
 		removeEditFormListeners();
@@ -215,8 +216,8 @@
 			main.appendChild(successElement);
 
 			const hideError = () => {
-				removeSuccessMessageHandlers();
-				main.removeChild(successElement);
+				removeSuccessMessageListeners();
+				successElement.remove();
 			}
 
 			const handleHideSuccessMessageClick = () => {
@@ -229,18 +230,18 @@
 				});
 			}
 	
-			const setSuccessMessageHandlers = () => {
+			const setSuccessMessageListeners = () => {
 				successElement.addEventListener("click", handleHideSuccessMessageClick);
 				document.addEventListener("keydown", handleHideSuccessMessageKeyDown);
 			}
 	
-			const removeSuccessMessageHandlers = () => {
+			const removeSuccessMessageListeners = () => {
 				successElement.removeEventListener("click", handleHideSuccessMessageClick);
 				document.removeEventListener("keydown", handleHideSuccessMessageKeyDown);
 			}
 
 			closeEditForm();
-			setSuccessMessageHandlers();
+			setSuccessMessageListeners();
 		}
 	
 		const handleError = (errorMessage) => {
@@ -253,8 +254,8 @@
 			main.appendChild(errorElement);
 	
 			const hideError = () => {
-				removeErrorModalHandlers();
-				main.removeChild(errorElement);
+				removeErrorModalListeners();
+				errorElement.remove();
 			}
 	
 			const handleHideErrorClick = () => {
@@ -276,20 +277,20 @@
 				hideError();
 			}
 	
-			const setErrorModalHandlers = () => {
+			const setErrorModalListeners = () => {
 				errorElement.addEventListener("click", handleHideErrorClick);
 				document.addEventListener("keydown", handleHideErrorKeyDown);
 				errorButton.addEventListener("click", handleReturnToEditorImageClick);
 			}
 	
-			const removeErrorModalHandlers = () => {
+			const removeErrorModalListeners = () => {
 				errorElement.removeEventListener("click", handleHideErrorClick);
 				document.removeEventListener("keydown", handleHideErrorKeyDown);
 				errorButton.removeEventListener("click", handleReturnToEditorImageClick);
 			}	
 			
 			window.utils.hideElement(form);
-			setErrorModalHandlers();
+			setErrorModalListeners();
 		}	
 
 		window.backend.sendData(formData, handleLoad, handleError);
