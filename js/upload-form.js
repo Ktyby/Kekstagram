@@ -171,14 +171,6 @@
 		hashtagsInput.style.borderColor = getFormValidationErrors(evt) ? 'red' : '';
 	}
 
-	const clearInput = () => {
-		uploadInput.value = "";
-		descriptionInput.value = "";
-		hashtagsInput.value = "";
-		hashtagsInput.style.borderColor = "";
-		hashtagsInput.setCustomValidity("");
-	}
-
 	const deleteOldEffectDataFromImage = () => {
 		uploadedImage.style.filter = "";
 		effectValue.removeAttribute("value");
@@ -199,8 +191,8 @@
 	}
 
 	const closeEditForm = () => {
+		hashtagsInput.style.borderColor = "";
 		form.reset();
-		clearInput();
 		window.utils.hideElement(imageEditor);
 		removeEditFormListeners();
 	}
