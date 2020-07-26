@@ -1,18 +1,21 @@
 "use strict";
 
 (() => {
-	const MAX_SHOWN_COMMENTS_COUNT = 5;
+	const MAX_SHOW_COMMENTS_COUNT = 5;
 
 	const bigPicture = document.querySelector(".big-picture");
+	const closeButton = bigPicture.querySelector(".big-picture__cancel");
 	const image = bigPicture.querySelector(".big-picture__img img");
 	const commentsCount = bigPicture.querySelector(".comments-count");
 	const socialCaption = bigPicture.querySelector(".social__caption");
 	const likesCount = bigPicture.querySelector(".likes-count");
 	const commentsList = bigPicture.querySelector(".social__comments");
-	const socialCommentCount = document.querySelector(".social__comment-count");
 	const commentsLoader = document.querySelector(".comments-loader");
+	const shownCommentsCount = commentsCount.previousSibling;
 
 	const renderBigPicture = (pictureID) => {
+		let commentCount = MAX_SHOW_COMMENTS_COUNT;
+
 		const currentPictureData = window.data[pictureID];
 
 		const assignDataForBigPicture = () => {  
@@ -22,10 +25,10 @@
 			likesCount.textContent = currentPictureData.likes;
 		}
 	
-		const renderCommentsForBigPicture = (pictureID) => {
+		const renderCommentsForBigPicture = (commentsCount) => {
 			window.utils.clearContentsOfElement(commentsList); // Удаление первого комментария из вёрстки
-			
-			const createComments = (pictureID) => {
+
+			const createComments = () => {
 				const fragment = new DocumentFragment();
 			
 				const createComment = (index) => {
@@ -59,7 +62,7 @@
 					return commentWrapper;
 				}
 							
-				const maxShowCommentCount = Math.min(currentPictureData.comments.length, MAX_SHOWN_COMMENTS_COUNT);
+				const maxShowCommentCount = Math.min(currentPictureData.comments.length, commentsCount);
 	
 				for (let index = 0; index < maxShowCommentCount; index++) {
 					fragment.append(createComment(index));
@@ -68,18 +71,60 @@
 				return fragment;
 			}
 					
-			commentsList.append(createComments(pictureID));
+			commentsList.append(createComments());
+
+			const showCommentCount = () => {
+				commentCount += MAX_SHOW_COMMENTS_COUNT;
+	
+				shownCommentsCount.textContent = `${commentsCount} из `;
+	
+				if (commentsCount === currentPictureData.comments.length || commentsCount > currentPictureData.comments.length) {
+					commentsLoader.classList.add("visually-hidden");
+					shownCommentsCount.textContent = `${currentPictureData.comments.length} из `;
+				}
+			}
+
+			showCommentCount();
+		}
+
+		const handleLoadCommentsClick = () => {
+			renderCommentsForBigPicture(commentCount);
+		}
+
+		const hendleHideBigPictureClick = () => {
+			commentsLoader.classList.remove("visually-hidden");
+
+			window.utils.hideElement(bigPicture);
+
+			removeBigPictureListeners();
+		}
+
+		const handleHideBigPictureKeyDown = (downEvt) => {
+			window.utils.isEscapeEvent(downEvt, () => {
+				commentsLoader.classList.remove("visually-hidden");
+
+				window.utils.hideElement(bigPicture);
+
+				removeBigPictureListeners();
+			});
 		}
 		
-		const hideCommentsCounter = () => {
-			socialCommentCount.classList.add("visually-hidden");
-			commentsLoader.classList.add("visually-hidden");
+		const setBigPictureListeners = () => {
+			commentsLoader.addEventListener("click", handleLoadCommentsClick);
+			closeButton.addEventListener("click", hendleHideBigPictureClick);
+			document.addEventListener("keydown", handleHideBigPictureKeyDown);
 		}
-		
-		renderCommentsForBigPicture(pictureID);
+
+		const removeBigPictureListeners = () => {
+			commentsLoader.removeEventListener("click", handleLoadCommentsClick);
+			closeButton.removeEventListener("click", hendleHideBigPictureClick);
+			document.removeEventListener("keydown", handleHideBigPictureKeyDown);
+		}
+
+		renderCommentsForBigPicture(MAX_SHOW_COMMENTS_COUNT);
 		assignDataForBigPicture();
 		window.utils.showElement(bigPicture);
-		hideCommentsCounter();
+		setBigPictureListeners();
 	}
 
 	window.renderBigPicture = renderBigPicture;

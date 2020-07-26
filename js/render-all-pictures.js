@@ -1,7 +1,7 @@
 "use strict";
 
 (() => {
-	const renderAllPictures = () => {
+	const renderAllPictures = (data) => {
 		const picturesContainer = document.querySelector(".pictures");
 		const fragment = new DocumentFragment();
 		const pictureTemplate = document.querySelector("#picture").content.querySelector(".picture");
@@ -13,11 +13,11 @@
 			image.querySelector(".picture__likes").textContent = picture.likes;
 			image.querySelector(".picture__img").src = picture.url;
 			image.setAttribute("data-number", index);
-		
+			
 			return image;
 		}
 
-		window.data.forEach((picture, index) => {
+		data.forEach((picture, index) => {
 			fragment.append(createPicture(picture, index));
 		});
 
