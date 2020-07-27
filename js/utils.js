@@ -30,11 +30,16 @@
     }
   }
 
+  const getRandomIntegerFromRange = (minValue, maxValue) => {
+    return Math.floor(Math.random() * (maxValue - minValue)) + minValue;
+  }
+
   window.utils = {
     showElement,
     hideElement,
     clearContentsOfElement,
     isEnterEvent,
-    isEscapeEvent
+    isEscapeEvent,
+    getRandomIntegerFromRange
   };
 })()

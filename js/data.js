@@ -1,6 +1,9 @@
 "use strict";
 
 (() => {
+	const main = document.querySelector("main");
+	const errorTemplate = document.querySelector("#error").content.querySelector(".error");
+
 	const handleLoad = (data) => {
 		window.data = data;
 		window.renderAllPictures(window.data);
@@ -8,11 +11,7 @@
 	}
 
 	const handleError = (errorMessage) => {
-		const main = document.querySelector("main");
-		const errorTemplate = document.querySelector("#error").content.querySelector(".error");
-
-		const errorElement = errorTemplate.cloneNode(true);
-		
+		const errorElement = errorTemplate.cloneNode(true);	
 		const errorButtons = errorElement.querySelector(".error__buttons");
 
 		errorElement.querySelector(".error__title").textContent = errorMessage;
@@ -22,8 +21,8 @@
 		main.appendChild(errorElement);
 
 		const hideError = () => {
-			removeErrorModalListeners();
 			errorElement.remove();
+			removeErrorModalListeners();
 		}
 
 		const handleHideErrorClick = () => {

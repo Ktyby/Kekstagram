@@ -25,7 +25,7 @@
 			likesCount.textContent = currentPictureData.likes;
 		}
 	
-		const renderCommentsForBigPicture = (commentsCount) => {
+		const renderComments = (commentsCount) => {
 			window.utils.clearContentsOfElement(commentsList); // Удаление первого комментария из вёрстки
 
 			const createComments = () => {
@@ -78,8 +78,8 @@
 	
 				shownCommentsCount.textContent = `${commentsCount} из `;
 	
-				if (commentsCount === currentPictureData.comments.length || commentsCount > currentPictureData.comments.length) {
-					commentsLoader.classList.add("visually-hidden");
+				if (commentsCount >= currentPictureData.comments.length) {
+					window.utils.hideElement(commentsLoader);
 					shownCommentsCount.textContent = `${currentPictureData.comments.length} из `;
 				}
 			}
@@ -88,24 +88,22 @@
 		}
 
 		const handleLoadCommentsClick = () => {
-			renderCommentsForBigPicture(commentCount);
+			renderComments(commentCount);
+		}
+
+		const hideBigPicture = () => {
+			window.utils.showElement(commentsLoader);
+			window.utils.hideElement(bigPicture);
+			removeBigPictureListeners();
 		}
 
 		const hendleHideBigPictureClick = () => {
-			commentsLoader.classList.remove("visually-hidden");
-
-			window.utils.hideElement(bigPicture);
-
-			removeBigPictureListeners();
+			hideBigPicture();
 		}
 
 		const handleHideBigPictureKeyDown = (downEvt) => {
 			window.utils.isEscapeEvent(downEvt, () => {
-				commentsLoader.classList.remove("visually-hidden");
-
-				window.utils.hideElement(bigPicture);
-
-				removeBigPictureListeners();
+				hideBigPicture();
 			});
 		}
 		
@@ -121,7 +119,7 @@
 			document.removeEventListener("keydown", handleHideBigPictureKeyDown);
 		}
 
-		renderCommentsForBigPicture(MAX_SHOW_COMMENTS_COUNT);
+		renderComments(MAX_SHOW_COMMENTS_COUNT);
 		assignDataForBigPicture();
 		window.utils.showElement(bigPicture);
 		setBigPictureListeners();
