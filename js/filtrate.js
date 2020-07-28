@@ -47,7 +47,6 @@
     const discussedPictureArray = defaultData.slice();
     discussedPictureArray.sort((firstElement, secondElement) => {
       let result = secondElement.comments.length - firstElement.comments.length;
-
       return result === 0 ? secondElement.likes - firstElement.likes : result;
     });
 
