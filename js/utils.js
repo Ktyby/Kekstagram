@@ -20,7 +20,7 @@
   
   const isEscapeEvent = (evt, callback) => {
     if (evt.code === Key.ESCAPE) {
-      callback(evt);
+      callback();
     }
   } 
   

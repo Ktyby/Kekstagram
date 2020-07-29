@@ -18,6 +18,7 @@
 
   const filtrate = () => {
     defaultData = window.data; 
+
     pictureFilterButtons.forEach((button) => {
       button.addEventListener("click", handleFilterClick);  
     });
@@ -34,13 +35,15 @@
   }
 
   const getNewPictureArray = () => {
-    const newPicturesArray = defaultData.slice();
-
-    for (let index = defaultData.length; index > MAX_NEW_PICTURES_COUNT; index--) {
-      newPicturesArray.splice(window.utils.getRandomIntegerFromRange(0, newPicturesArray.length), 1);
+    const newPictureArray = defaultData.slice();
+    
+    const getRandomSortOfArray = () => {
+      return 0.5 - Math.random()
     }
 
-    return newPicturesArray;
+    newPictureArray.sort(getRandomSortOfArray).splice(0, newPictureArray.length - MAX_NEW_PICTURES_COUNT);
+
+    return newPictureArray;
   }
 
   const getDiscussedPictureArray = () => {
@@ -54,7 +57,8 @@
   }
 
   const renderFiltratedPicture = () => {
-    window.renderAllPictures(window.data)
+    removePreviousFilter();
+    window.renderAllPictures(window.data);
   }
   
   const handleFilterClick = (evt) => {
@@ -70,7 +74,6 @@
         break;
     }
 
-    removePreviousFilter();
     window.avoidDebounce(renderFiltratedPicture);
     evt.target.classList.add("img-filters__button--active");
   }

@@ -24,16 +24,17 @@
 		picturesContainer.append(fragment);
 			
 		const miniaturs = document.querySelectorAll(".picture");
+
+		const showBigPicture = (evt) => {
+			window.renderBigPicture(getPictureAttribute(evt));
+		}
 		
 		const handlePictureClick = (evt) => {
-			window.renderBigPicture(getPictureAttribute(evt));
+			showBigPicture(evt);
 		}
 
 		const handlePictureKeyDown = (downEvt) => {
-			window.utils.isEnterEvent(downEvt, (evt) => {
-				evt.preventDefault();
-				window.renderBigPicture(getPictureAttribute(evt));
-			});
+			window.utils.isEnterEvent(downEvt, showBigPicture);
 		}
 
 		miniaturs.forEach((picture) => {

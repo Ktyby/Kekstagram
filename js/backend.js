@@ -2,8 +2,9 @@
 
 (() => {
   const GET_URL = "https://javascript.pages.academy/kekstagram/data";
-  const POST_URL = 'https://javascript.pages.academy/kekstagram';
+  const POST_URL = "https://javascript.pages.academy/kekstagram";
   const MAX_LOADING_TIME = 10000;
+  const SUCCESS_STATUS = 200;
 
   const getData = (handleLoad, handleError) => {
     const xhr = new XMLHttpRequest();
@@ -11,24 +12,23 @@
 
     xhr.timeout = MAX_LOADING_TIME;
 
-    xhr.open("GET", GET_URL);    
+    xhr.addEventListener("load", (() => {
+      if (xhr.status === SUCCESS_STATUS) {
+        handleLoad(xhr.response);
+      } else {
+        handleError(`Произошла ошибка при загрузке данных: ${xhr.status} ${xhr.statusText}`);
+      }
+    }));
 
-    const handleRequestLoad = () => {
-      handleLoad(xhr.response);
-    }
-
-    const handleRequestError = () => {
+    xhr.addEventListener("error", (() => {
       handleError("Произошла ошибка при загрузке данных");
-    }
+    }));
 
-    const handleRequestTimeoutError = () => {
+    xhr.addEventListener("timeout", (() => {
       handleError(`Запрос не успел обработаться за ${MAX_LOADING_TIME}мс`);
-    }
+    }));
 
-    xhr.addEventListener("load", handleRequestLoad);
-    xhr.addEventListener("error", handleRequestError);
-    xhr.addEventListener("timeout", handleRequestTimeoutError);
-
+    xhr.open("GET", GET_URL);
     xhr.send();
   }
 
@@ -38,21 +38,21 @@
 
     xhr.timeout = MAX_LOADING_TIME;
 
-    const handleRequestLoad = () => {
-      handleLoad();
-    }
+    xhr.addEventListener("load", (() => {
+      if (xhr.status === SUCCESS_STATUS) {
+        handleLoad();
+      } else {
+        handleError(`Произошла ошибка при загрузке данных: ${xhr.status} ${xhr.statusText}`);
+      }
+    }));
 
-    const handleRequestError = () => {
+    xhr.addEventListener("error", (() => {
       handleError("Не удалось отправить данные, попробуйте позже");
-    }
+    }));
 
-    const handleRequestTimeoutError = () => {
+    xhr.addEventListener("timeout", (() => {
       handleError(`Запрос не успел обработаться за ${MAX_LOADING_TIME}мс`);
-    }
-
-    xhr.addEventListener("load", handleRequestLoad);
-    xhr.addEventListener("error", handleRequestError);
-    xhr.addEventListener("timeout", handleRequestTimeoutError);
+    }));
 
     xhr.open("POST", POST_URL);
     xhr.send(data);

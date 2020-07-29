@@ -30,9 +30,7 @@
 		}
 
 		const handleHideErrorKeyDown = (downEvt) => {
-			window.utils.isEscapeEvent(downEvt, () => {
-				hideError();
-			});
+			window.utils.isEscapeEvent(downEvt, hideError)
 		}
 
 		const setErrorModalListeners = () => {

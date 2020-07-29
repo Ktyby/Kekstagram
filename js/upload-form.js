@@ -217,9 +217,7 @@
 			}
 	
 			const handleHideSuccessMessageKeyDown = (downEvt) => {
-				window.utils.isEscapeEvent(downEvt, () => {
-					hideError();
-				});
+				window.utils.isEscapeEvent(downEvt, hideError);
 			}
 	
 			const setSuccessMessageListeners = () => {
@@ -249,19 +247,19 @@
 				removeErrorModalListeners();
 				errorElement.remove();
 			}
-	
-			const handleHideErrorClick = () => {
+
+			const closeErrorAndShowForm = () => {
 				window.utils.showElement(form);
 				hideError();
 				closeEditForm();
 			}
 	
+			const handleHideErrorClick = () => {
+				closeErrorAndShowForm();
+			}
+	
 			const handleHideErrorKeyDown = (downEvt) => {
-				window.utils.isEscapeEvent(downEvt, () => {
-					window.utils.showElement(form);
-					hideError();
-					closeEditForm();
-				});
+				window.utils.isEscapeEvent(downEvt, closeErrorAndShowForm);
 			}
 
 			const handleReturnToEditorImageClick = () => {
@@ -349,11 +347,8 @@
 	}
 	
 	const handleImageEditorCloseKeyDown = (downEvt) => {
-		window.utils.isEscapeEvent(downEvt, (evt) => {
-			if (descriptionInput !== document.activeElement && hashtagsInput !== document.activeElement) {
-				evt.preventDefault();
-				closeEditForm();
-			}
-		});
+		if (descriptionInput !== document.activeElement && hashtagsInput !== document.activeElement) {
+			window.utils.isEscapeEvent(downEvt, closeEditForm);
+		}
 	}
 })()
