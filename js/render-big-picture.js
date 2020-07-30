@@ -86,7 +86,7 @@
 			removeBigPictureListeners();
 		}
 	
-		const hendleHideBigPictureClick = () => {
+		const handleHideBigPictureClick = () => {
 			hideBigPicture();
 		}
 	
@@ -100,13 +100,13 @@
 
 		const setBigPictureListeners = () => {
 			commentsLoader.addEventListener("click", handleLoadCommentsClick);
-			closeButton.addEventListener("click", hendleHideBigPictureClick);
+			closeButton.addEventListener("click", handleHideBigPictureClick);
 			document.addEventListener("keydown", handleHideBigPictureKeyDown);
 		}
 	
 		const removeBigPictureListeners = () => {
 			commentsLoader.removeEventListener("click", handleLoadCommentsClick);
-			closeButton.removeEventListener("click", hendleHideBigPictureClick);
+			closeButton.removeEventListener("click", handleHideBigPictureClick);
 			document.removeEventListener("keydown", handleHideBigPictureKeyDown);
 		}
 
