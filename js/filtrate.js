@@ -16,8 +16,8 @@
 
   let defaultData = [];
 
-  const filtrate = () => {
-    defaultData = window.data; 
+  const filtrate = (data) => {
+    defaultData = data; 
 
     pictureFilterButtons.forEach((button) => {
       button.addEventListener("click", handleFilterClick);  
@@ -27,23 +27,20 @@
   const removePreviousFilter = () => {
     const pictures = document.querySelectorAll('.picture');
 
-    pictureFilterButtons.forEach((button) => {
-      button.classList.remove('img-filters__button--active');
-    });
-
     pictures.forEach((picture) => picture.remove());
   }
 
-  const getNewPictureArray = () => {
-    const newPictureArray = defaultData.slice();
-    
-    const getRandomSortOfArray = () => {
-      return 0.5 - Math.random()
+  const getNewPicturesArray = () => {
+    const allPictures = defaultData.slice();
+    const newPicturesArray = [];
+    let indexNewPicture;
+
+    for (let i = 0; i < MAX_NEW_PICTURES_COUNT; i++) {
+      indexNewPicture = window.utils.getRandomIntegerFromRange(0, allPictures.length);
+      newPicturesArray.push(allPictures.splice(indexNewPicture, 1)[0]);
     }
 
-    newPictureArray.sort(getRandomSortOfArray).splice(0, newPictureArray.length - MAX_NEW_PICTURES_COUNT);
-
-    return newPictureArray;
+    return newPicturesArray;
   }
 
   const getDiscussedPictureArray = () => {
@@ -66,7 +63,7 @@
         window.data = defaultData;
         break;
       case Filter.NEW:
-        window.data = getNewPictureArray();
+        window.data = getNewPicturesArray();
         break;
       case Filter.DISCUSSED:
         window.data = getDiscussedPictureArray();
@@ -74,6 +71,11 @@
     }
 
     window.avoidDebounce(renderFiltratedPicture);
+
+    pictureFilterButtons.forEach((button) => {
+      button.classList.remove('img-filters__button--active');
+    });
+
     evt.target.classList.add("img-filters__button--active");
   }
  

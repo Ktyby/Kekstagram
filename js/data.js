@@ -7,7 +7,7 @@
 	const handleLoad = (data) => {
 		window.data = data;
 		window.renderAllPictures(window.data);
-		window.filtrate();
+		window.filtrate(data.slice(0));
 	}
 
 	const handleError = (errorMessage) => {
