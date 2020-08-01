@@ -6,6 +6,8 @@
 	const MAX_HASHTAGS_NUMBER = 5;
 	const MAX_HASHTAG_LENGTH = 20;
 	const SEPARATOR = "||";
+	const MIN_SCALE_CONTROL = 25;
+	const MAX_SCALE_CONTROL = 100;
 
 	const Effect = {
 		NONE: {
@@ -52,7 +54,10 @@
 		}
 	}
 
-	const form = document.querySelector(".img-upload__form");
+	const errorTemplate = document.querySelector("#error").content.querySelector(".error");
+	const successTemplate = document.querySelector("#success").content.querySelector(".success");
+	const main = document.querySelector("main");
+	const form = main.querySelector(".img-upload__form");
 	const uploadInput = form.querySelector(".img-upload__input");
 	const imageEditor = form.querySelector(".img-upload__overlay");
 	const uploadedImage = imageEditor.querySelector(".img-upload__preview img");
@@ -65,6 +70,9 @@
 	const effectValue = slider.querySelector(".effect-level__value");
 	const hashtagsInput = imageEditor.querySelector(".text__hashtags");
 	const descriptionInput = imageEditor.querySelector(".text__description");
+	const scaleInput = imageEditor.querySelector(".scale__control--value");
+	const scaleButtonSmaller = imageEditor.querySelector(".scale__control--smaller");
+	const scaleButtonBigger = imageEditor.querySelector(".scale__control--bigger");
 
 	let currentEffect = Effect.NONE;
 
@@ -76,6 +84,16 @@
 	}
 
 	uploadInput.addEventListener("change", handleFileUploadChange);
+
+	const handleScaleButtonSmallerClick = (evt) => {
+		if (scaleInput.value > MIN_SCALE_CONTROL) {
+			
+		}
+	}
+
+	const handleScaleButtonBiggerClick = (evt) => {
+		
+	}
 
 	const addEffectDataToImage = (currentEffect, filterValue) => { //Добавление эффекта соответственно с настраиваемой насыщенностью
 		const getEffectPower = (effect, value) => {
@@ -149,6 +167,12 @@
 		document.addEventListener("mousemove", handlePinMouseMove);
 		document.addEventListener("mouseup", handlePinMouseUp);
 	}
+
+	const deleteOldEffectDataFromImage = () => {
+		uploadedImage.style.filter = "";
+		effectValue.removeAttribute("value");
+		uploadedImage.classList.remove(`effects__preview--${currentEffect.effectName}`);
+	}
 	
 	const setEditFormListeners = () => {
 		editorCloseButton.addEventListener("click", handleImageEditorCloseClick);
@@ -156,19 +180,116 @@
 		hashtagsInput.addEventListener("input", handleHashtagInput);
 		form.addEventListener("submit", handleFormSubmit);
 		pin.addEventListener("mousedown", handlePinMouseDown);
+		scaleButtonSmaller.addEventListener("click", handleScaleButtonSmallerClick);
+		scaleButtonBigger.addEventListener("click", handleScaleButtonBiggerClick);
 		
 		effectsRadio.forEach((effect) => {
 			effect.addEventListener("focus", handleEffectFocus);
 		});
 	}
 
-	const handleHashtagInput = (evt) => {    
-		hashtagsInput.setCustomValidity("");
-		hashtagsInput.setCustomValidity(getFormValidationErrors(evt));
+	const removeEditFormListeners = () => {
+		editorCloseButton.removeEventListener("click", handleImageEditorCloseClick);
+		document.removeEventListener("keydown", handleImageEditorCloseKeyDown);
+		hashtagsInput.removeEventListener("input", handleHashtagInput);
+		form.removeEventListener("submit", handleFormSubmit);
+		pin.removeEventListener("mousedown", handlePinMouseDown);
+		scaleButtonSmaller.removeEventListener("click", handleScaleButtonSmallerClick);
+		scaleButtonBigger.removeEventListener("click", handleScaleButtonBiggerClick);
+		deleteOldEffectDataFromImage();
+
+		effectsRadio.forEach((effect) => {
+			effect.removeEventListener("focus", handleEffectFocus);
+		});
 	}
 
-	const handleFormSubmit = (evt) => {
+	const handleFormSubmit = (evt) => { // Отправка данных на сервер
 		evt.preventDefault();
+
+		const formData = new FormData(form);
+
+		const handleLoad = () => {
+			const successElement = successTemplate.cloneNode(true);
+	
+			main.appendChild(successElement);
+
+			const hideError = () => {
+				removeSuccessMessageListeners();
+				successElement.remove();
+			}
+
+			const handleHideSuccessMessageClick = () => {
+				hideError();
+			}
+	
+			const handleHideSuccessMessageKeyDown = (downEvt) => {
+				window.utils.isEscapeEvent(downEvt, hideError);
+			}
+	
+			const setSuccessMessageListeners = () => {
+				successElement.addEventListener("click", handleHideSuccessMessageClick);
+				document.addEventListener("keydown", handleHideSuccessMessageKeyDown);
+			}
+	
+			const removeSuccessMessageListeners = () => {
+				successElement.removeEventListener("click", handleHideSuccessMessageClick);
+				document.removeEventListener("keydown", handleHideSuccessMessageKeyDown);
+			}
+
+			closeEditForm();
+			setSuccessMessageListeners();
+		}
+	
+		const handleError = (errorMessage) => {
+			const errorElement = errorTemplate.cloneNode(true);
+
+			errorElement.querySelector(".error__title").textContent = errorMessage;
+
+			const errorButton = errorElement.querySelector(".error__button:first-child");
+	
+			main.appendChild(errorElement);
+	
+			const hideError = () => {
+				removeErrorModalListeners();
+				errorElement.remove();
+			}
+
+			const closeErrorAndShowForm = () => {
+				window.utils.showElement(form);
+				hideError();
+				closeEditForm();
+			}
+	
+			const handleHideErrorClick = () => {
+				closeErrorAndShowForm();
+			}
+	
+			const handleHideErrorKeyDown = (downEvt) => {
+				window.utils.isEscapeEvent(downEvt, closeErrorAndShowForm);
+			}
+
+			const handleReturnToEditorImageClick = () => {
+				window.utils.showElement(form);
+				hideError();
+			}
+	
+			const setErrorModalListeners = () => {
+				errorElement.addEventListener("click", handleHideErrorClick);
+				document.addEventListener("keydown", handleHideErrorKeyDown);
+				errorButton.addEventListener("click", handleReturnToEditorImageClick);
+			}
+	
+			const removeErrorModalListeners = () => {
+				errorElement.removeEventListener("click", handleHideErrorClick);
+				document.removeEventListener("keydown", handleHideErrorKeyDown);
+				errorButton.removeEventListener("click", handleReturnToEditorImageClick);
+			}	
+			
+			window.utils.hideElement(form);
+			setErrorModalListeners();
+		}	
+
+		window.backend.sendData(formData, handleLoad, handleError);
 	}
 
 	const getFormValidationErrors = (evt) => { // Валидация
@@ -227,32 +348,15 @@
 		return message;
 	}
 
-	const deleteOldEffectDataFromImage = () => {
-		uploadedImage.style.filter = "";
-		uploadedImage.classList.remove(`effects__preview--${currentEffect.effectName}`);
-	}
-
-	const removeEditFormListeners = () => {
-		editorCloseButton.removeEventListener("click", handleImageEditorCloseClick);
-		document.removeEventListener("keydown", handleImageEditorCloseKeyDown);
-		hashtagsInput.removeEventListener("input", handleHashtagInput);
-		form.removeEventListener("submit", handleFormSubmit);
-		pin.removeEventListener("mousedown", handlePinMouseDown);
-		deleteOldEffectDataFromImage();
-
-		effectsRadio.forEach((effect) => {
-			effect.removeEventListener("focus", handleEffectFocus);
-		});
-	}
-
-	const clearInput = () => {
-		uploadInput.value = "";
-		descriptionInput.value = "";
-		hashtagsInput.value = "";
+	const handleHashtagInput = (evt) => {    
+		hashtagsInput.setCustomValidity("");
+		hashtagsInput.setCustomValidity(getFormValidationErrors(evt));
+		hashtagsInput.style.borderColor = getFormValidationErrors(evt) ? "red" : "";
 	}
 
 	const closeEditForm = () => {
-		clearInput();
+		hashtagsInput.style.borderColor = "";
+		form.reset();
 		window.utils.hideElement(imageEditor);
 		removeEditFormListeners();
 	}
@@ -262,12 +366,8 @@
 	}
 	
 	const handleImageEditorCloseKeyDown = (downEvt) => {
-		window.utils.isEscapeEvent(downEvt, (evt) => {
-			if (descriptionInput !== document.activeElement && hashtagsInput !== document.activeElement) {
-				evt.preventDefault();
-				closeEditForm();
-			}
-		});
+		if (descriptionInput !== document.activeElement && hashtagsInput !== document.activeElement) {
+			window.utils.isEscapeEvent(downEvt, closeEditForm);
+		}
 	}
-
 })()
