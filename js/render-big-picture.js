@@ -33,7 +33,7 @@
 			window.utils.hideElement(commentsLoader);
 		}
 
-		const createComment = (commentsObj) => {
+		const createComment = (commentObj) => {
 			const createCommentWrapper = () => {
 				const newComment = document.createElement("li");
 				newComment.classList.add("social__comment");
@@ -45,7 +45,7 @@
 				const avatar = document.createElement("img");
 				avatar.classList.add("social__picture");
 
-				avatar.src = commentsObj.avatar; 
+				avatar.src = commentObj.avatar; 
 				avatar.width = AVATAR_WIDTH;
 				avatar.height = AVATAR_HEIGHT;
 				avatar.alt = "Аватар автора комментария";
@@ -57,7 +57,7 @@
 				const message = document.createElement("p");
 				message.classList.add("social__text");
 
-				message.textContent = commentsObj.message; 
+				message.textContent = commentObj.message; 
 
 				return message;
 			}

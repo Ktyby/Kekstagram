@@ -31,7 +31,7 @@
   }
 
   const getNewPicturesArray = () => {
-    const allPictures = defaultData.slice();
+    const allPictures = [...defaultData];
     const newPicturesArray = [];
     let indexNewPicture;
 
@@ -44,7 +44,7 @@
   }
 
   const getDiscussedPictureArray = () => {
-    const discussedPictureArray = defaultData.slice();
+    const discussedPictureArray = [...defaultData];
     discussedPictureArray.sort((firstElement, secondElement) => {
       return (secondElement.comments.length - firstElement.comments.length) || (secondElement.likes - firstElement.likes);
     });
