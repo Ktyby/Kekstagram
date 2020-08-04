@@ -6,6 +6,11 @@
 	const MAX_HASHTAGS_NUMBER = 5;
 	const MAX_HASHTAG_LENGTH = 20;
 	const SEPARATOR = "||";
+	const MIN_SCALE_CONTROL = 25;
+	const MAX_SCALE_CONTROL = 100;
+	const ZOOM_STEP = 25;
+	const AVAILABLE_IMAGE_FORMATS = ["jpeg", "png", "gif", "jpg"];
+	const WRONG_FILE_TYPE_MESSAGE = "Я могу просматривать только фото!";
 
 	const Effect = {
 		NONE: {
@@ -68,17 +73,61 @@
 	const effectValue = slider.querySelector(".effect-level__value");
 	const hashtagsInput = imageEditor.querySelector(".text__hashtags");
 	const descriptionInput = imageEditor.querySelector(".text__description");
+	const scaleInput = imageEditor.querySelector(".scale__control--value");
+	const scaleButtonSmaller = imageEditor.querySelector(".scale__control--smaller");
+	const scaleButtonBigger = imageEditor.querySelector(".scale__control--bigger");
 
 	let currentEffect = Effect.NONE;
+	let scale = 100;
 
 	const handleFileUploadChange = () => {
-		window.utils.showElement(imageEditor);
-		window.utils.hideElement(slider); 
-		
-		setEditFormListeners();
+		const file = uploadInput.files[0];
+		const fileName = file.name.toLowerCase();
+		let isMatches;
+
+		AVAILABLE_IMAGE_FORMATS.some((format) => {
+			isMatches = fileName.endsWith(format);
+		});		
+
+		if (isMatches) {
+			const reader = new FileReader();
+
+			reader.readAsDataURL(file);
+
+			reader.addEventListener("load", () => {
+				uploadedImage.src = reader.result;
+
+				window.utils.showElement(imageEditor);
+				window.utils.hideElement(slider); 
+				
+				setEditFormListeners();
+			});
+		} else {
+			handleError(WRONG_FILE_TYPE_MESSAGE);
+		}
 	}
 
 	uploadInput.addEventListener("change", handleFileUploadChange);
+
+	const changePictureScale = (scale) => {
+		scaleInput.value = `${scale}%`;
+		scaleInput.setAttribute("value", `${scale}%`);
+		uploadedImage.style.transform = `scale(${scale / 100})`;
+	}
+
+	const handleScaleButtonSmallerClick = () => {
+		if (scale > MIN_SCALE_CONTROL) {
+			scale -= ZOOM_STEP;
+			changePictureScale(scale);
+		}
+	}
+
+	const handleScaleButtonBiggerClick = () => {
+		if (scale < MAX_SCALE_CONTROL) {
+			scale += ZOOM_STEP;
+			changePictureScale(scale);
+		}
+	}
 
 	const addEffectDataToImage = (currentEffect, filterValue) => { //Добавление эффекта соответственно с настраиваемой насыщенностью
 		const getEffectPower = (effect, value) => {
@@ -152,6 +201,12 @@
 		document.addEventListener("mousemove", handlePinMouseMove);
 		document.addEventListener("mouseup", handlePinMouseUp);
 	}
+
+	const deleteOldEffectDataFromImage = () => {
+		uploadedImage.style.filter = "";
+		effectValue.removeAttribute("value");
+		uploadedImage.classList.remove(`effects__preview--${currentEffect.effectName}`);
+	}
 	
 	const setEditFormListeners = () => {
 		editorCloseButton.addEventListener("click", handleImageEditorCloseClick);
@@ -159,22 +214,13 @@
 		hashtagsInput.addEventListener("input", handleHashtagInput);
 		form.addEventListener("submit", handleFormSubmit);
 		pin.addEventListener("mousedown", handlePinMouseDown);
+		scaleButtonSmaller.addEventListener("click", handleScaleButtonSmallerClick);
+		scaleButtonBigger.addEventListener("click", handleScaleButtonBiggerClick);
+		changePictureScale(scale);
 		
 		effectsRadio.forEach((effect) => {
 			effect.addEventListener("focus", handleEffectFocus);
 		});
-	}
-
-	const handleHashtagInput = (evt) => {    
-		hashtagsInput.setCustomValidity("");
-		hashtagsInput.setCustomValidity(getFormValidationErrors(evt));
-		hashtagsInput.style.borderColor = getFormValidationErrors(evt) ? "red" : "";
-	}
-
-	const deleteOldEffectDataFromImage = () => {
-		uploadedImage.style.filter = "";
-		effectValue.removeAttribute("value");
-		uploadedImage.classList.remove(`effects__preview--${currentEffect.effectName}`);
 	}
 
 	const removeEditFormListeners = () => {
@@ -183,6 +229,8 @@
 		hashtagsInput.removeEventListener("input", handleHashtagInput);
 		form.removeEventListener("submit", handleFormSubmit);
 		pin.removeEventListener("mousedown", handlePinMouseDown);
+		scaleButtonSmaller.removeEventListener("click", handleScaleButtonSmallerClick);
+		scaleButtonBigger.removeEventListener("click", handleScaleButtonBiggerClick);
 		deleteOldEffectDataFromImage();
 
 		effectsRadio.forEach((effect) => {
@@ -190,11 +238,57 @@
 		});
 	}
 
-	const closeEditForm = () => {
-		hashtagsInput.style.borderColor = "";
-		form.reset();
-		window.utils.hideElement(imageEditor);
-		removeEditFormListeners();
+	const handleError = (errorMessage) => {
+		const errorElement = errorTemplate.cloneNode(true);
+
+		errorElement.querySelector(".error__title").textContent = errorMessage;
+
+		const errorButton = errorElement.querySelector(".error__button:first-child");
+
+		main.appendChild(errorElement);
+
+		if (errorMessage === WRONG_FILE_TYPE_MESSAGE) {
+			window.utils.hideElement(errorButton);	
+		}
+
+		const hideError = () => {
+			removeErrorModalListeners();
+			errorElement.remove();
+		}
+
+		const closeErrorAndShowForm = () => {
+			window.utils.showElement(form);
+			hideError();
+			closeEditForm();
+		}
+
+		const handleHideErrorClick = () => {
+			closeErrorAndShowForm();
+		}
+
+		const handleHideErrorKeyDown = (downEvt) => {
+			window.utils.isEscapeEvent(downEvt, closeErrorAndShowForm);
+		}
+
+		const handleReturnToEditorImageClick = () => {
+			window.utils.showElement(form);
+			hideError();
+		}
+
+		const setErrorModalListeners = () => {
+			errorElement.addEventListener("click", handleHideErrorClick);
+			document.addEventListener("keydown", handleHideErrorKeyDown);
+			errorButton.addEventListener("click", handleReturnToEditorImageClick);
+		}
+
+		const removeErrorModalListeners = () => {
+			errorElement.removeEventListener("click", handleHideErrorClick);
+			document.removeEventListener("keydown", handleHideErrorKeyDown);
+			errorButton.removeEventListener("click", handleReturnToEditorImageClick);
+		}	
+		
+		window.utils.hideElement(form);
+		setErrorModalListeners();
 	}
 
 	const handleFormSubmit = (evt) => { // Отправка данных на сервер
@@ -232,55 +326,6 @@
 
 			closeEditForm();
 			setSuccessMessageListeners();
-		}
-	
-		const handleError = (errorMessage) => {
-			const errorElement = errorTemplate.cloneNode(true);
-
-			errorElement.querySelector(".error__title").textContent = errorMessage;
-
-			const errorButton = errorElement.querySelector(".error__button:first-child");
-	
-			main.appendChild(errorElement);
-	
-			const hideError = () => {
-				removeErrorModalListeners();
-				errorElement.remove();
-			}
-
-			const closeErrorAndShowForm = () => {
-				window.utils.showElement(form);
-				hideError();
-				closeEditForm();
-			}
-	
-			const handleHideErrorClick = () => {
-				closeErrorAndShowForm();
-			}
-	
-			const handleHideErrorKeyDown = (downEvt) => {
-				window.utils.isEscapeEvent(downEvt, closeErrorAndShowForm);
-			}
-
-			const handleReturnToEditorImageClick = () => {
-				window.utils.showElement(form);
-				hideError();
-			}
-	
-			const setErrorModalListeners = () => {
-				errorElement.addEventListener("click", handleHideErrorClick);
-				document.addEventListener("keydown", handleHideErrorKeyDown);
-				errorButton.addEventListener("click", handleReturnToEditorImageClick);
-			}
-	
-			const removeErrorModalListeners = () => {
-				errorElement.removeEventListener("click", handleHideErrorClick);
-				document.removeEventListener("keydown", handleHideErrorKeyDown);
-				errorButton.removeEventListener("click", handleReturnToEditorImageClick);
-			}	
-			
-			window.utils.hideElement(form);
-			setErrorModalListeners();
 		}	
 
 		window.backend.sendData(formData, handleLoad, handleError);
@@ -340,6 +385,19 @@
 		}
 
 		return message;
+	}
+
+	const handleHashtagInput = (evt) => {    
+		hashtagsInput.setCustomValidity("");
+		hashtagsInput.setCustomValidity(getFormValidationErrors(evt));
+		hashtagsInput.style.borderColor = getFormValidationErrors(evt) ? "red" : "";
+	}
+
+	const closeEditForm = () => {
+		hashtagsInput.style.borderColor = "";
+		form.reset();
+		window.utils.hideElement(imageEditor);
+		removeEditFormListeners();
 	}
 
 	const handleImageEditorCloseClick = () => {
