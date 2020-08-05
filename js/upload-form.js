@@ -79,10 +79,10 @@
 	const scaleButtonBigger = imageEditor.querySelector(".scale__control--bigger");
 
 	let currentEffect = Effect.NONE;
-	let scale;
+	let scale = 100;
 
-	const showImageEditor = (reader) => {
-		uploadedImage.src = reader.result;
+	const showImageEditor = (pathToImage) => {
+		uploadedImage.src = pathToImage;
 
 		window.utils.showElement(imageEditor);
 		window.utils.hideElement(slider); 
@@ -91,7 +91,6 @@
 	}
 
 	const handleFileUploadChange = () => {
-		scale = 100;
 		const [file] = uploadInput.files;
 		const fileName = file.name.toLowerCase();
 
@@ -103,7 +102,8 @@
 			reader.readAsDataURL(file);
 
 			reader.addEventListener("load", () => {
-				showImageEditor(reader);
+				changePictureScale(MAX_SCALE_VALUE);
+				showImageEditor(reader.result);
 			});
 		} else {
 			handleError(WRONG_FILE_TYPE_MESSAGE);
@@ -218,7 +218,6 @@
 		pin.addEventListener("mousedown", handlePinMouseDown);
 		scaleButtonSmaller.addEventListener("click", handleScaleButtonSmallerClick);
 		scaleButtonBigger.addEventListener("click", handleScaleButtonBiggerClick);
-		changePictureScale(MAX_SCALE_VALUE);
 
 		effectsRadio.forEach((effect) => {
 			effect.addEventListener("focus", handleEffectFocus);
