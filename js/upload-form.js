@@ -79,7 +79,7 @@
 	const scaleButtonBigger = imageEditor.querySelector(".scale__control--bigger");
 
 	let currentEffect = Effect.NONE;
-	let scale = 100;
+	let scale = MAX_SCALE_VALUE;
 
 	const showImageEditor = (pathToImage) => {
 		uploadedImage.src = pathToImage;
@@ -112,7 +112,8 @@
 
 	uploadInput.addEventListener("change", handleFileUploadChange);
 
-	const changePictureScale = (scale) => {
+	const changePictureScale = (newScale) => {
+		scale = newScale;
 		scaleInput.setAttribute("value", `${scale}%`);
 		uploadPreview.style.transform = `scale(${scale / MAX_SCALE_VALUE})`;
 	}
@@ -205,6 +206,8 @@
 	}
 
 	const deleteOldEffectDataFromImage = () => {
+		pin.style = "";
+		depth.style = "";
 		uploadedImage.style.filter = "";
 		effectValue.removeAttribute("value");
 		uploadedImage.classList.remove(`effects__preview--${currentEffect.effectName}`);
@@ -394,9 +397,17 @@
 		hashtagsInput.style.borderColor = getFormValidationErrors(evt) ? "red" : "";
 	}
 
+	const clearForm = () => {
+		hashtagsInput.setCustomValidity("");
+    hashtagsInput.value = "";
+    hashtagsInput.style.borderColor = "";
+    descriptionInput.value = "";
+	}
+
 	const closeEditForm = () => {
-		hashtagsInput.style.borderColor = "";
-		form.reset();
+		uploadInput.value = "";
+
+		clearForm();
 		window.utils.hideElement(imageEditor);
 		removeEditFormListeners();
 	}

@@ -2,7 +2,8 @@
 
 (() => {
 	const renderAllPictures = (data) => {
-		const picturesContainer = document.querySelector(".pictures");
+		const body = document.querySelector("body");
+		const picturesContainer = body.querySelector(".pictures");
 		const fragment = new DocumentFragment();
 		const pictureTemplate = document.querySelector("#picture").content.querySelector(".picture");
 
@@ -26,6 +27,7 @@
 		const miniaturs = document.querySelectorAll(".picture");
 
 		const showBigPicture = (evt) => {
+			body.classList.add("modal-open");
 			window.renderBigPicture(getPictureAttribute(evt));
 		}
 		

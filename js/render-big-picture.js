@@ -5,7 +5,8 @@
   const AVATAR_WIDTH = 35;
   const AVATAR_HEIGHT = 35;
 
-	const bigPicture = document.querySelector(".big-picture");
+	const body = document.querySelector("body");
+	const bigPicture = body.querySelector(".big-picture");
 	const closeButton = bigPicture.querySelector(".big-picture__cancel");
 	const image = bigPicture.querySelector(".big-picture__img img");
 	const commentsCount = bigPicture.querySelector(".comments-count");
@@ -81,6 +82,7 @@
 		const hideBigPicture = () => {
 			firstIndexOfComment = 0;
 	
+			body.classList.remove("modal-open");
 			window.utils.showElement(commentsLoader);
 			window.utils.hideElement(bigPicture);
 			removeBigPictureListeners();
