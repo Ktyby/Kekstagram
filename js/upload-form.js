@@ -6,8 +6,8 @@
 	const MAX_HASHTAGS_NUMBER = 5;
 	const MAX_HASHTAG_LENGTH = 20;
 	const SEPARATOR = "||";
-	const MIN_SCALE_CONTROL = 25;
-	const MAX_SCALE_CONTROL = 100;
+	const MIN_SCALE_VALUE = 25;
+	const MAX_SCALE_VALUE = 100;
 	const ZOOM_STEP = 25;
 	const AVAILABLE_IMAGE_FORMATS = ["jpeg", "png", "gif", "jpg"];
 	const WRONG_FILE_TYPE_MESSAGE = "Я могу просматривать только фото!";
@@ -63,7 +63,8 @@
 	const form = main.querySelector(".img-upload__form");
 	const uploadInput = form.querySelector(".img-upload__input");
 	const imageEditor = form.querySelector(".img-upload__overlay");
-	const uploadedImage = imageEditor.querySelector(".img-upload__preview img");
+	const uploadPreview = imageEditor.querySelector(".img-upload__preview");
+	const uploadedImage = uploadPreview.querySelector("img");
 	const editorCloseButton = imageEditor.querySelector(".img-upload__cancel");
 	const effectsRadio = imageEditor.querySelectorAll(".effects__radio");
 	const slider = imageEditor.querySelector(".img-upload__effect-level");
@@ -78,16 +79,23 @@
 	const scaleButtonBigger = imageEditor.querySelector(".scale__control--bigger");
 
 	let currentEffect = Effect.NONE;
-	let scale = 100;
+	let scale;
+
+	const showImageEditor = (reader) => {
+		uploadedImage.src = reader.result;
+
+		window.utils.showElement(imageEditor);
+		window.utils.hideElement(slider); 
+		
+		setEditFormListeners();
+	}
 
 	const handleFileUploadChange = () => {
-		const file = uploadInput.files[0];
+		scale = 100;
+		const [file] = uploadInput.files;
 		const fileName = file.name.toLowerCase();
-		let isMatches;
 
-		AVAILABLE_IMAGE_FORMATS.some((format) => {
-			isMatches = fileName.endsWith(format);
-		});		
+		const isMatches = AVAILABLE_IMAGE_FORMATS.some((format) => fileName.endsWith(format))		
 
 		if (isMatches) {
 			const reader = new FileReader();
@@ -95,12 +103,7 @@
 			reader.readAsDataURL(file);
 
 			reader.addEventListener("load", () => {
-				uploadedImage.src = reader.result;
-
-				window.utils.showElement(imageEditor);
-				window.utils.hideElement(slider); 
-				
-				setEditFormListeners();
+				showImageEditor(reader);
 			});
 		} else {
 			handleError(WRONG_FILE_TYPE_MESSAGE);
@@ -110,20 +113,19 @@
 	uploadInput.addEventListener("change", handleFileUploadChange);
 
 	const changePictureScale = (scale) => {
-		scaleInput.value = `${scale}%`;
 		scaleInput.setAttribute("value", `${scale}%`);
-		uploadedImage.style.transform = `scale(${scale / 100})`;
+		uploadPreview.style.transform = `scale(${scale / MAX_SCALE_VALUE})`;
 	}
 
 	const handleScaleButtonSmallerClick = () => {
-		if (scale > MIN_SCALE_CONTROL) {
+		if (scale > MIN_SCALE_VALUE) {
 			scale -= ZOOM_STEP;
 			changePictureScale(scale);
 		}
 	}
 
 	const handleScaleButtonBiggerClick = () => {
-		if (scale < MAX_SCALE_CONTROL) {
+		if (scale < MAX_SCALE_VALUE) {
 			scale += ZOOM_STEP;
 			changePictureScale(scale);
 		}
@@ -216,8 +218,8 @@
 		pin.addEventListener("mousedown", handlePinMouseDown);
 		scaleButtonSmaller.addEventListener("click", handleScaleButtonSmallerClick);
 		scaleButtonBigger.addEventListener("click", handleScaleButtonBiggerClick);
-		changePictureScale(scale);
-		
+		changePictureScale(MAX_SCALE_VALUE);
+
 		effectsRadio.forEach((effect) => {
 			effect.addEventListener("focus", handleEffectFocus);
 		});
