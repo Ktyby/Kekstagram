@@ -16,7 +16,7 @@
 	const commentsList = bigPicture.querySelector(".social__comments");
 	const commentsLoader = document.querySelector(".comments-loader");
 	const shownCommentsCount = commentsCount.previousSibling;
-	let firstIndexOfComment = 0;
+	let indexOfLastCommentDisplayed = 0;
 
 	const assignDataForBigPicture = (currentPictureData) => {  
 		image.src = currentPictureData.url;
@@ -27,7 +27,7 @@
 
 	const renderComments = (pictureID) => {
 		const comments = window.data[pictureID].comments;
-		let indexOfComment = firstIndexOfComment + SHOWN_COMMENTS_STEP;
+		let indexOfComment = indexOfLastCommentDisplayed + SHOWN_COMMENTS_STEP;
 		const fragment = new DocumentFragment();
 	
 		if (indexOfComment >= comments.length) {
@@ -69,11 +69,11 @@
 			fragment.append(commentWrapper);
 		}
 
-		comments.slice(firstIndexOfComment, indexOfComment).forEach(createComment);
+		comments.slice(indexOfLastCommentDisplayed, indexOfComment).forEach(createComment);
 		commentsList.append(fragment);
 		shownCommentsCount.textContent = `${indexOfComment} из `;
 	
-		firstIndexOfComment = indexOfComment;
+		indexOfLastCommentDisplayed = indexOfComment;
 	}
 
 	const renderBigPicture = (pictureID) => {
@@ -81,7 +81,7 @@
 		const currentPictureData = window.data[pictureID];
 
 		const hideBigPicture = () => {
-			firstIndexOfComment = 0;
+			indexOfLastCommentDisplayed = 0;
 	
 			body.classList.remove("modal-open");
 			window.utils.showElement(commentsLoader);
