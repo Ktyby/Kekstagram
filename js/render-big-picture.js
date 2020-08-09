@@ -3,7 +3,8 @@
 (() => {
 	const SHOWN_COMMENTS_STEP = 5;
   const AVATAR_WIDTH = 35;
-  const AVATAR_HEIGHT = 35;
+	const AVATAR_HEIGHT = 35;
+	const AVATAR_ALT_TEXT = "Аватар автора комментария";
 
 	const body = document.querySelector("body");
 	const bigPicture = body.querySelector(".big-picture");
@@ -29,7 +30,7 @@
 		let indexOfComment = firstIndexOfComment + SHOWN_COMMENTS_STEP;
 		const fragment = new DocumentFragment();
 	
-		if (indexOfComment > comments.length) {
+		if (indexOfComment >= comments.length) {
 			indexOfComment = comments.length;
 			window.utils.hideElement(commentsLoader);
 		}
@@ -49,7 +50,7 @@
 				avatar.src = commentObj.avatar; 
 				avatar.width = AVATAR_WIDTH;
 				avatar.height = AVATAR_HEIGHT;
-				avatar.alt = "Аватар автора комментария";
+				avatar.alt = AVATAR_ALT_TEXT;
 				
 				return avatar;
 			}

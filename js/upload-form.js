@@ -383,9 +383,7 @@
 		errors.repeatHashtag = errors.repeatHashtag || (getHashtagRepeatError(hashtags).length > 0);
 
 		for (const element in errors) {
-			if (errors[element]) {
-				message += `${errorToMessage[element]} ${SEPARATOR} `;
-			}
+			message += errors[element] ? `${errorToMessage[element]} ${SEPARATOR} ` : '';
 		}
 
 		return message;

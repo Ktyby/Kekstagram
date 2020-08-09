@@ -6,8 +6,6 @@
   const pictureFilter = document.querySelector(".img-filters");
   const pictureFilterButtons = pictureFilter.querySelectorAll(".img-filters__button");
 
-  pictureFilter.classList.remove("img-filters--inactive");
-
   const Filter ={
     POPULAR: "filter-popular",
     NEW: "filter-new",
@@ -18,6 +16,8 @@
 
   const filtrate = (data) => {
     defaultData = data; 
+
+    pictureFilter.classList.remove("img-filters--inactive");
 
     pictureFilterButtons.forEach((button) => {
       button.addEventListener("click", handleFilterClick);  
